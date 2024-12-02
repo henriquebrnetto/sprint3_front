@@ -18,7 +18,7 @@ function App() {
     <>
       <AppBar position="fixed" sx={{ backgroundColor: "#A71220" }} >
         <Toolbar disableGutters>
-          {/* Logo centralizado */}
+          <img className="logoMST" src={mst} />
           <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
             <Typography
               variant="h6"
