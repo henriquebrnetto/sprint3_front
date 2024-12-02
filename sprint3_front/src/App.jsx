@@ -4,6 +4,11 @@ import { Box, Toolbar, Typography, Tooltip, IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import mst from './assets/mst.jpg';
 
+import { HomeAdmin } from './pages/HomeAdmin'
+import { Associados } from './pages/Associados'
+
+import { HashRouter, Link, Route, Routes } from 'react-router-dom'
+
 import './App.css'
 
 function App() {
