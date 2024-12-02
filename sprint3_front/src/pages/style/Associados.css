@@ -17,10 +17,18 @@
 
 #previousPageButton {
     background-color: rgba(0,0,0,0);
+    border-radius: 1000px;
+    color: rgba(18, 18, 18, 0.87);
+    transition: .5s;
+    width: 4vw;
+    justify-content: center;
+    align-items: center;
+    border: none;
 }
 
 #previousPageButton:hover {
-    background-color: rgba(0,0,0,.2);
+    background-color: rgba(18, 18, 18, 0.1);
+    border: none;
 }
 
 .topSection {

@@ -3,15 +3,13 @@ import { useEffect, useState } from 'react';
 import './style/Associados.css';
 import { IoArrowBack } from 'react-icons/io5';
 import { FaFilter, FaSortAmountDown, FaSearch, FaTrash, FaPencilAlt  } from 'react-icons/fa';
-
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
+import { Autocomplete, Pagination, TextField } from "@mui/material";
 
 export function Associados() {
 
     const [associates, setAssociates] = useState([]);
     const [maxPages, setMaxPages] = useState(1);
-    const [pageN, setPageN] = useState(1);
+    const [pageN, setPageN] = useState(0);
     const [pagedAssociates, setPagedAssociates] = useState([]);
 
     useEffect(() => {
@@ -60,6 +58,10 @@ export function Associados() {
             option.nome.toLowerCase().includes(inputValue.toLowerCase()) ||
             String(option.matricula).includes(inputValue)
         );
+    };
+
+    const handlePageChange = (event, value) => {
+        setPageN(value - 1);
     };
 
     return (
@@ -122,8 +124,8 @@ export function Associados() {
                 </div>
                 <h2 className='tituloAssociados'>Associados:</h2>
                 <div className='Associados'>
-                    {pagedAssociates.map(associate => (
-                        <div className='associate'>
+                    {pagedAssociates.map((associate, index) => (
+                        <div className='associate' key={index}>
                             <button className='associateBox'>
                                 <h3 id='associateName'>{associate.nome}</h3>
                             </button>
@@ -132,6 +134,11 @@ export function Associados() {
                         </div>
                     ))}
                 </div>
+                {maxPages > 1 ? (
+                    <Pagination count={maxPages} page={pageN + 1} onChange={handlePageChange} className='navBar' sx={{justifyContent:"center", alignItems: "center", display:"flex", marginTop:"15px"}}/>
+                ):(
+                    <></>
+                )}
             </div>
         </>
     );  
