@@ -11,6 +11,18 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  padding: 0px;
+}
+
+#root {
+  flex-grow: 1;
+  display: flex;
+  justify-content: top;
+  align-items: top;
+  min-height: 100vh;
+  padding: 0px;
+
 }
 
 a {

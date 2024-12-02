@@ -1,0 +1,97 @@
+.mainGrid {
+    width: 100%;
+    /* border: 2cqb solid white; */
+    /* border: 2px solid white; */
+    align-items: center;
+    padding: 15px;
+    margin: 20px;
+    margin-top: 45px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-evenly; 
+}
+
+.botaoRed {
+    flex-grow: .27;
+    border: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.botaoRed:hover, #eventButtonDesktop:hover, #eventButtonMobile:hover {
+    filter: brightness(.7);
+    outline: 0px;
+    border: 0px;
+    cursor: pointer;
+}
+
+.botaoRed:focus, #eventButtonDesktop:focus, #eventButtonMobile:focus {
+    outline: 0px;
+}
+
+.event {
+    display:flex;
+    justify-content: flex-end;
+    flex-direction: row;
+    align-items: center;
+    padding: 3vw;
+    background: rgba(0,0,0,.1);
+    border-radius: 15px;
+    height: 30px;
+}
+
+#eventInfo {
+    margin-right: auto;
+}
+
+#eventButtonDesktop, #eventButtonMobile {
+    border: 0px;
+    /* width: 20vw; */
+    display: flex;
+    align-items: center;
+    height: 55px;
+}
+
+#eventButtonMobile {
+    display: none;
+    height: 55px;
+}
+
+#ass {
+    grid-area: ass;
+}
+#eve {
+    grid-area: eve;
+}
+#rel {
+    grid-area: rel;
+}
+
+@media(max-width: 500px){
+    .buttons {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-areas:
+            "   ass   eve   "
+            "   rel   rel   "
+        ;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        width: 100%;
+    }
+
+    #eventButtonMobile {
+        display: flex;
+    }
+
+    #eventButtonDesktop {
+        display: none;
+    }
+}
+
+
+

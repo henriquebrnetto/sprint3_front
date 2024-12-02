@@ -1,0 +1,63 @@
+.mainGrid {
+    width: 100%;
+    /* border: 2cqb solid white; */
+    /* border: 2px solid white; */
+    padding: 0px;
+    padding: 15px;
+    margin: 20px;
+    margin-top: 55px;
+}
+
+.previousPage {
+    display: flex;
+    margin-bottom: 5px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+#previousPageButton {
+    background-color: rgba(0,0,0,0);
+}
+
+#previousPageButton:hover {
+    background-color: rgba(0,0,0,.2);
+}
+
+.topSection {
+    display: flex;
+    gap: 5px;
+}
+
+.searchBar {
+    flex-grow: 1;
+    color: white;
+}
+
+.tituloAssociados {
+    display: flex;
+    align-items: flex-start;
+}
+
+.associate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.associateBox {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-grow: 1;
+    background: rgba(0,0,0,.2);
+    border-radius: 10px;
+    padding-left: 3vw;
+    height: 60px;
+}
+
+.editButton, .deleteButton {
+    height: 60px;
+}
+
+
