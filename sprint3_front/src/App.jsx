@@ -2,6 +2,9 @@ import { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import { Box, Toolbar, Typography, Tooltip, IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
+import mst from './assets/mst.jpg';
+
+import './App.css'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true); // Simulação do estado de login
@@ -11,6 +14,7 @@ function App() {
       <Toolbar disableGutters>
         {/* Logo centralizado */}
         <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+          <img className='logoMST' src={mst} />
           <Typography
             variant="h6"
             noWrap
