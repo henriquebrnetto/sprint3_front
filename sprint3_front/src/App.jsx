@@ -2,11 +2,9 @@ import { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import { Box, Toolbar, Typography, Tooltip, IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { HashRouter, Link, Route, Routes } from 'react-router-dom'
+import mst from './assets/mst.jpg';
 
-import { HomeAdmin } from './pages/HomeAdmin'
-import { Associados } from './pages/Associados'
-
+import './App.css'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true); // Simulação do estado de login
@@ -46,6 +44,7 @@ function App() {
           )}
         </Toolbar>
       </AppBar>
+      
       <Routes>
         <Route path="/homeadmin" element={<HomeAdmin/>}/>
         <Route path='/associados' element={<Associados/>}/>

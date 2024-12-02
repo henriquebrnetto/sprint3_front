@@ -40,3 +40,10 @@
 .read-the-docs {
   color: #888;
 }
+
+.logoMST {
+  height: 64px;
+  position: absolute;
+  top: 0;
+  left: 0; 
+}
