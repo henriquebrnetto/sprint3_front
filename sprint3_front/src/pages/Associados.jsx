@@ -5,45 +5,91 @@ import { FaFilter, FaSortAmountDown, FaSearch, FaTrash, FaPencilAlt } from 'reac
 
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import FilterDialog from './FilterDialog';  // Ensure this file exists as per the previous example
-import OrderDialog from './OrderDialog';    // Ensure this file exists as per the previous example
+import FilterDialog from './FilterDialog';
+import OrderDialog from './OrderDialog';
 
 export function Associados() {
   const [associates, setAssociates] = useState([]);
   const [pagedAssociates, setPagedAssociates] = useState([]);
   const [filters, setFilters] = useState({ nome: '', data: '', ageMin: '', ageMax: '', hasChildren: false });
   const [orderBy, setOrderBy] = useState({ field: 'nome', direction: 'asc' });
+  const [searchTerm, setSearchTerm] = useState('');
   const [isFilterDialogOpen, setFilterDialogOpen] = useState(false);
   const [isOrderDialogOpen, setOrderDialogOpen] = useState(false);
 
   useEffect(() => {
     loadAssociates();
-  }, [filters, orderBy]);
+  }, []);
+
+  useEffect(() => {
+    // Only apply filters and sorting if data is loaded
+    if (associates.length > 0) {
+      applyFiltersAndSorting();
+    }
+  }, [filters, orderBy, associates]);
+
+  useEffect(() => {
+    if (searchTerm) {
+      handleSearch(searchTerm);
+    } else if (associates.length > 0) {
+      applyFiltersAndSorting(); // Reset to filtered/sorted list if search is cleared
+    }
+  }, [searchTerm]);
 
   const loadAssociates = () => {
-    // Replace with your API call in the future
     const data = [
       { nome: 'Alice', data: '2023-01-01', age: 25, hasChildren: true, id: '1' },
       { nome: 'Bob', data: '2023-02-15', age: 30, hasChildren: false, id: '2' },
-      // More test data
+      { nome: 'Charlie', data: '2022-12-10', age: 40, hasChildren: true, id: '3' },
     ];
 
-    let filteredData = data.filter((assoc) =>
-      (filters.nome === '' || assoc.nome.toLowerCase().includes(filters.nome.toLowerCase())) &&
-      (filters.data === '' || assoc.data.includes(filters.data)) &&
-      (filters.ageMin === '' || assoc.age >= parseInt(filters.ageMin)) &&
-      (filters.ageMax === '' || assoc.age <= parseInt(filters.ageMax)) &&
-      (filters.hasChildren === false || assoc.hasChildren === filters.hasChildren)
-    );
+    setAssociates(data);
+    setPagedAssociates(data); // Initialize with full data
+  };
 
+  const applyFiltersAndSorting = () => {
+    const areFiltersEmpty =
+      !filters.nome &&
+      !filters.data &&
+      !filters.ageMin &&
+      !filters.ageMax &&
+      !filters.hasChildren;
+
+    let filteredData;
+
+    if (areFiltersEmpty) {
+      // If no filters are applied, use the full associates list
+      filteredData = [...associates];
+    } else {
+      // Apply filtering logic
+      filteredData = associates.filter((assoc) =>
+        (filters.nome === '' || assoc.nome.toLowerCase().includes(filters.nome.toLowerCase())) &&
+        (filters.data === '' || assoc.data.includes(filters.data)) &&
+        (filters.ageMin === '' || assoc.age >= parseInt(filters.ageMin)) &&
+        (filters.ageMax === '' || assoc.age <= parseInt(filters.ageMax)) &&
+        (!filters.hasChildren || assoc.hasChildren === filters.hasChildren)
+      );
+    }
+
+    // Apply sorting
     filteredData.sort((a, b) => {
       if (orderBy.direction === 'asc') {
-        return a[orderBy.field].localeCompare(b[orderBy.field]);
+        return String(a[orderBy.field]).localeCompare(String(b[orderBy.field]));
       } else {
-        return b[orderBy.field].localeCompare(a[orderBy.field]);
+        return String(b[orderBy.field]).localeCompare(String(a[orderBy.field]));
       }
     });
+
+    setPagedAssociates(filteredData);
+  };
+
+  const handleSearch = (term) => {
+    const lowerCaseTerm = term.toLowerCase();
+    const filteredData = associates.filter(
+      (assoc) =>
+        assoc.nome.toLowerCase().startsWith(lowerCaseTerm) ||
+        String(assoc.id).toLowerCase().startsWith(lowerCaseTerm)
+    );
 
     setPagedAssociates(filteredData);
   };
@@ -63,7 +109,9 @@ export function Associados() {
             className='searchBar'
             options={pagedAssociates}
             freeSolo
-            getOptionLabel={(option) => option.nome}
+            inputValue={searchTerm}
+            onInputChange={(event, newInputValue) => setSearchTerm(newInputValue)}
+            getOptionLabel={(option) => option.nome || ''}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -76,26 +124,12 @@ export function Associados() {
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderWidth: '2px',
-                    borderColor: 'black',
                     '& fieldset': {
                       borderWidth: '2px',
-                      borderColor: 'rgba(0,0,0,.4)',
                       borderRadius: '7px',
                     },
-                    '&:hover fieldset': {
-                      borderColor: 'rgba(0,0,0,.6)',
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'rgba(0,0,0,.6)',
-                    },
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: 'rgba(0,0,0,.7)',
-                    fontSize: '16px',
-                    fontWeight: '500',
-                  },
-                  '& .MuiInputLabel-root.Mui-focused': {
-                    color: 'rgba(0,0,0,.7)',
+                    '&:hover fieldset': { borderColor: 'rgba(0,0,0,.6)' },
+                    '&.Mui-focused fieldset': { borderColor: 'rgba(0,0,0,.6)' },
                   },
                 }}
               />
