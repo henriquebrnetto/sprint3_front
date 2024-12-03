@@ -43,7 +43,6 @@
 
 .logoMST {
   height: 64px;
-  position: absolute;
-  top: 0;
-  left: 0; 
+  position: relative;
+  margin-right: 15px;
 }

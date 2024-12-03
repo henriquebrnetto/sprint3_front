@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
-import { Box, Toolbar, Typography, Tooltip, IconButton } from '@mui/material';
+import { Box, Toolbar, Typography, Tooltip, IconButton, Button } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import mst from './assets/mst.jpg';
 
@@ -13,18 +13,18 @@ import './App.css'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true); // Simulação do estado de login
+  const [isAdmin, setIsAdmin] = useState(false);
 
   return (
     <>
       <AppBar position="fixed" sx={{ backgroundColor: "#A71220" }} >
         <Toolbar disableGutters>
-          <img className="logoMST" src={mst} />
-          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <img className="logoMST" src={mst} />
             <Typography
               variant="h6"
               noWrap
               component="a"
-              href="/"
               sx={{
                 fontWeight: 700,
                 letterSpacing: '.1rem',
