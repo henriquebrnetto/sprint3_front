@@ -1,4 +1,3 @@
-// src/components/OrderDialog.js
 import React, { useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -11,7 +10,7 @@ import Radio from '@mui/material/Radio';
 import IconButton from '@mui/material/IconButton';
 import { FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
 
-const OrderDialog = ({ open, onClose, onApply, initialOrder }) => {
+const OrderDialog = ({ open, onClose, onApply, fields, initialOrder }) => {
   const [orderField, setOrderField] = useState(initialOrder.field);
   const [orderDirection, setOrderDirection] = useState(initialOrder.direction);
 
@@ -25,14 +24,16 @@ const OrderDialog = ({ open, onClose, onApply, initialOrder }) => {
       <DialogTitle>Order Options</DialogTitle>
       <DialogContent>
         <RadioGroup value={orderField} onChange={(e) => setOrderField(e.target.value)}>
-          <FormControlLabel value="nome" control={<Radio />} label="Name" />
-          <FormControlLabel value="data" control={<Radio />} label="Date" />
-          <FormControlLabel value="id" control={<Radio />} label="ID" />
+          {fields.map((field) => (
+            <FormControlLabel key={field.name} value={field.name} control={<Radio />} label={field.label} />
+          ))}
         </RadioGroup>
-        <IconButton onClick={() => setOrderDirection(orderDirection === 'asc' ? 'desc' : 'asc')}>
-          {orderDirection === 'asc' ? <FaSortAmountUp /> : <FaSortAmountDown />}
-        </IconButton>
-        <span>{orderDirection === 'asc' ? 'Ascending' : 'Descending'}</span>
+        <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center' }}>
+          <IconButton onClick={() => setOrderDirection(orderDirection === 'asc' ? 'desc' : 'asc')}>
+            {orderDirection === 'asc' ? <FaSortAmountUp /> : <FaSortAmountDown />}
+          </IconButton>
+          <span>{orderDirection === 'asc' ? 'Ascending' : 'Descending'}</span>
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>

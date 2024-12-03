@@ -11,18 +11,30 @@ import OrderDialog from './OrderDialog';
 export function Associados() {
   const [associates, setAssociates] = useState([]);
   const [pagedAssociates, setPagedAssociates] = useState([]);
-  const [filters, setFilters] = useState({ nome: '', data: '', ageMin: '', ageMax: '', hasChildren: false });
+  const [filters, setFilters] = useState({});
   const [orderBy, setOrderBy] = useState({ field: 'nome', direction: 'asc' });
   const [searchTerm, setSearchTerm] = useState('');
   const [isFilterDialogOpen, setFilterDialogOpen] = useState(false);
   const [isOrderDialogOpen, setOrderDialogOpen] = useState(false);
+
+  const filterFields = [
+    { name: 'nome', label: 'Name', type: 'text' },
+    { name: 'data', label: 'Date', type: 'text' },
+    { name: 'ageRange', label: 'Age Range', type: 'minmax', min: 0, max: 100 },
+    { name: 'hasChildren', label: 'Has Children', type: 'checkbox' },
+  ];
+
+  const orderFields = [
+    { name: 'nome', label: 'Name' },
+    { name: 'data', label: 'Date' },
+    { name: 'id', label: 'ID' },
+  ];
 
   useEffect(() => {
     loadAssociates();
   }, []);
 
   useEffect(() => {
-    // Only apply filters and sorting if data is loaded
     if (associates.length > 0) {
       applyFiltersAndSorting();
     }
@@ -32,7 +44,7 @@ export function Associados() {
     if (searchTerm) {
       handleSearch(searchTerm);
     } else if (associates.length > 0) {
-      applyFiltersAndSorting(); // Reset to filtered/sorted list if search is cleared
+      applyFiltersAndSorting();
     }
   }, [searchTerm]);
 
@@ -48,29 +60,22 @@ export function Associados() {
   };
 
   const applyFiltersAndSorting = () => {
-    const areFiltersEmpty =
-      !filters.nome &&
-      !filters.data &&
-      !filters.ageMin &&
-      !filters.ageMax &&
-      !filters.hasChildren;
-
-    let filteredData;
-
-    if (areFiltersEmpty) {
-      // If no filters are applied, use the full associates list
-      filteredData = [...associates];
-    } else {
-      // Apply filtering logic
-      filteredData = associates.filter((assoc) =>
-        (filters.nome === '' || assoc.nome.toLowerCase().includes(filters.nome.toLowerCase())) &&
-        (filters.data === '' || assoc.data.includes(filters.data)) &&
-        (filters.ageMin === '' || assoc.age >= parseInt(filters.ageMin)) &&
-        (filters.ageMax === '' || assoc.age <= parseInt(filters.ageMax)) &&
-        (!filters.hasChildren || assoc.hasChildren === filters.hasChildren)
-      );
-    }
-
+    let filteredData = [...associates];
+  
+    // Apply filters
+    filteredData = filteredData.filter((assoc) => {
+      const { nome, data, ageRange, hasChildren } = filters;
+  
+      const matchesName = !nome || assoc.nome.toLowerCase().includes(nome.toLowerCase());
+      const matchesDate = !data || assoc.data.includes(data);
+      const matchesAge =
+        !ageRange ||
+        (assoc.age >= (ageRange[0] || 0) && assoc.age <= (ageRange[1] || 100));
+      const matchesHasChildren = hasChildren === undefined || assoc.hasChildren === hasChildren;
+  
+      return matchesName && matchesDate && matchesAge && matchesHasChildren;
+    });
+  
     // Apply sorting
     filteredData.sort((a, b) => {
       if (orderBy.direction === 'asc') {
@@ -79,9 +84,10 @@ export function Associados() {
         return String(b[orderBy.field]).localeCompare(String(a[orderBy.field]));
       }
     });
-
+  
     setPagedAssociates(filteredData);
   };
+  
 
   const handleSearch = (term) => {
     const lowerCaseTerm = term.toLowerCase();
@@ -121,17 +127,6 @@ export function Associados() {
                     <FaSearch /> Buscar associado
                   </span>
                 }
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderWidth: '2px',
-                    '& fieldset': {
-                      borderWidth: '2px',
-                      borderRadius: '7px',
-                    },
-                    '&:hover fieldset': { borderColor: 'rgba(0,0,0,.6)' },
-                    '&.Mui-focused fieldset': { borderColor: 'rgba(0,0,0,.6)' },
-                  },
-                }}
               />
             )}
           />
@@ -154,20 +149,20 @@ export function Associados() {
         </div>
       </div>
 
-      {/* Filter Dialog Component */}
       <FilterDialog
         open={isFilterDialogOpen}
         onClose={() => setFilterDialogOpen(false)}
         onApply={setFilters}
         initialFilters={filters}
+        fieldDefinitions={filterFields}
       />
 
-      {/* Order Dialog Component */}
       <OrderDialog
         open={isOrderDialogOpen}
         onClose={() => setOrderDialogOpen(false)}
         onApply={setOrderBy}
         initialOrder={orderBy}
+        fields={orderFields}
       />
     </>
   );
