@@ -14,6 +14,7 @@ import { AssociadoCadastroEdicao } from './pages/AssociadoCadastroEdicao'
 import { HashRouter, Link, Route, Routes } from 'react-router-dom'
 
 import './App.css'
+import { Login } from './pages/login';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true); // Simulação do estado de login
@@ -55,6 +56,7 @@ function App() {
       </AppBar>
       
       <Routes>
+        <Route path='/' element={<Login />}/>
         <Route path="/homeadmin" element={<HomeAdmin/>}/>
         
         <Route path='/eventos' element={<Eventos/>}/>
