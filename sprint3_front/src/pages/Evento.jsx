@@ -7,6 +7,8 @@ import { LuShirt } from "react-icons/lu";
 import { GrClose } from "react-icons/gr";
 import { Autocomplete, Pagination, TextField } from "@mui/material";
 
+import {useParams} from 'react-router-dom';
+
 export function Evento() {
 
     const {eventId} = useParams();
@@ -19,9 +21,10 @@ export function Evento() {
     const [pageN, setPageN] = useState(0);
 
     useEffect(() => {
-        loadEvent();
         loadMaxPages();
+        loadEvent();
         loadPagedPresences();
+        loadAllPresences()
     }, [])
 
     function loadPagedPresences(pageN, eventId) {
@@ -40,7 +43,7 @@ export function Evento() {
     }
 
     function loadAllPresences(eventId) {
-        // fetch(<>'localhost:8081/api/v1/presenca/evento/{event.id}'</>)
+        // fetch(<>'localhost:8081/api/v1/presenca/evento/{eventId}'</>)
         //     .then(response => response.json())
         //     .then(data => setPagedPresences(data))
         //     .catch(error => console.error('Erro ao carregar eventos ativos:', error));\
@@ -53,7 +56,7 @@ export function Evento() {
         setAllPresences(data)
     }
 
-    function loadEvent() {
+    function loadEvent(eventId) {
         // fetch(<>localhost:8081/api/v1/eventos/{event.id}</>)
         //     .then(response => response.json())
         //     .then(data => setEvents(data))
@@ -67,23 +70,28 @@ export function Evento() {
         setEvent(data)
     }
 
+    
+
     function loadMaxPages() {
         setMaxPages(1)
     }
 
     const [selectedValue, setSelectedValue] = useState(null);
 
+
+
     const handleSearch = (options, { inputValue }) => {
         return options.filter(
         (option) =>
-            option.associadoNome.toLowerCase().includes(inputValue.toLowerCase()) ||
-                option.associadoMatricula.includes(inputValue)
+            option.nome.toLowerCase().includes(inputValue.toLowerCase())
         );
     };
 
     const handlePageChange = (event, value) => {
         setPageN(value - 1);
     };
+
+
 
     return (
         <>
@@ -107,7 +115,6 @@ export function Evento() {
                         </div>
                     </div>
                     <div className='eventoAssociateSearch'>
-                        <button className='eventoFilter'><FaFilter></FaFilter></button>
                         <Autocomplete
                             autoHighlight={true}
                             className='eventoSearchBar'
@@ -121,7 +128,7 @@ export function Evento() {
 
                                     label={
                                         <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <FaSearch /> Buscar evento
+                                            <FaSearch /> Buscar associado no evento:
                                         </span>
                                     }
 
@@ -157,7 +164,6 @@ export function Evento() {
                                 />
                             )}
                         />
-                        <button className='eventoSortButton'><FaSortAmountDown></FaSortAmountDown></button>
                     </div>
                 </div>
                 <h2 className='eventoAssociatesTitle'>Associados presentes no evento:</h2>

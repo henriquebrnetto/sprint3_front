@@ -1,0 +1,11 @@
+eventocadastroedicao: fazer
+marcarpresenca: fazer
+Login: fazer
+
+usuario: terminar html e fazer css
+
+eventos: criar evento
+associados: criar associado
+
+evento: sem css
+associadocadastroedicao: sem css
