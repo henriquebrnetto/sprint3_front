@@ -20,16 +20,14 @@ const FilterDialog = ({ open, onClose, onApply, fieldDefinitions, initialFilters
     const { name, value } = e.target;
   
     setFilters((prev) => {
-      // Handle `threeOptions` fields explicitly
       const field = fieldDefinitions.find((field) => field.name === name);
       if (field?.type === 'threeOptions') {
         return {
           ...prev,
-          [name]: value === 'true' ? true : value === 'false' ? false : 'both',
+          [name]: value,
         };
       }
   
-      // Default handling for other field types
       return {
         ...prev,
         [name]: value,
@@ -45,17 +43,16 @@ const FilterDialog = ({ open, onClose, onApply, fieldDefinitions, initialFilters
   };
 
   const handleReset = () => {
-    // Reset filters to their initial state
     const resetFilters = fieldDefinitions.reduce((acc, field) => {
       if (field.type === 'checkbox') acc[field.name] = false;
       else if (field.type === 'minmax') acc[field.name] = [field.min || 0, field.max || 100];
-      else if (field.type === 'threeOptions') acc[field.name] = 'both'; // Reset to 'both'
+      else if (field.type === 'threeOptions') acc[field.name] = field.default || 'todos';
       else acc[field.name] = '';
       return acc;
     }, {});
 
-    setFilters(resetFilters); // Reset local state
-    onApply(resetFilters); // Update parent state
+    setFilters(resetFilters);
+    onApply(resetFilters);
   };
 
   const handleApply = () => {
@@ -69,18 +66,7 @@ const FilterDialog = ({ open, onClose, onApply, fieldDefinitions, initialFilters
       <DialogContent>
         {fieldDefinitions.map((field) => (
           <div key={field.name} style={{ marginBottom: '16px' }}>
-            {field.type === 'checkbox' ? (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name={field.name}
-                    checked={filters[field.name] || false}
-                    onChange={handleChange}
-                  />
-                }
-                label={field.label}
-              />
-            ) : field.type === 'minmax' ? (
+            {field.type === 'minmax' ? (
               <div>
                 <label>{field.label}</label>
                 <Slider
@@ -97,11 +83,15 @@ const FilterDialog = ({ open, onClose, onApply, fieldDefinitions, initialFilters
                 <Select
                   label={field.label}
                   name={field.name}
-                  value={filters[field.name] !== undefined ? String(filters[field.name]) : 'both'}
+                  value={
+                    filters[field.name] !== undefined
+                      ? String(filters[field.name])
+                      : field.default || 'Todos' // Use default if value is undefined
+                  }
                   onChange={handleChange}
                 >
                   {field.options.map((option) => (
-                    <MenuItem key={option.value} value={String(option.value)}>
+                    <MenuItem key={option.value} value={option.value}>
                       {option.label}
                     </MenuItem>
                   ))}

@@ -18,27 +18,16 @@ export function Associados() {
   const [isOrderDialogOpen, setOrderDialogOpen] = useState(false);
 
   const filterFields = [
-    { name: 'nome', label: 'Name', type: 'text' },
-    { name: 'data', label: 'Date', type: 'text' },
-    { name: 'ageRange', label: 'Age Range', type: 'minmax', min: 0, max: 100 },
-    {
-      name: 'hasChildren',
-      label: 'Has Children',
-      type: 'threeOptions', // New type
-      options: [
-        { value: 'both', label: 'Both' },
-        { value: true, label: 'Yes' },
-        { value: false, label: 'No' },
-      ],
-    }
-  ];
+    { name: 'idade', label: 'Idade', type: 'minmax', min: 0, max: 120 },
+    { name: 'casado', label: 'Estado Civil', type: 'threeOptions', default: 'Todos', options: [ { value: 'Todos', label: 'Todos' }, { value: true, label: 'Casado' }, { value: false, label: 'Solteiro' } ] },
+    { name: 'sexo', label: 'Sexo', type: 'threeOptions', default: 'Todos', options: [ { value: 'Todos', label: 'Todos' }, { value: 'M', label: 'M' }, { value: 'F', label: 'F' }, { value: 'O', label: 'O' } ] },
+    { name: 'pcd', label: 'PCD', type: 'threeOptions', default: 'Todos', options: [ { value: 'Todos', label: 'Todos' }, { value: true, label: 'Sim' }, { value: false, label: 'Não' } ] },
+    { name: 'bairro', label: 'Bairro', type: 'text' },
+    { name: 'filhos', label: 'Filhos', type: 'minmax', min: 0, max: 20 },
+    { name: 'status', label: 'Status', type: 'threeOptions', default: 'ativo', options: [ { value: 'ativo', label: 'Ativo' }, { value: 'bloqueado', label: 'Bloqueado' }, { value: 'Todos', label: 'Todos' } ] } ];  
 
-  const orderFields = [
-    { name: 'nome', label: 'Name' },
-    { name: 'data', label: 'Date' },
-    { name: 'id', label: 'ID' },
-  ];
-
+    const orderFields = [ { name: 'nome', label: 'Nome' }, { name: 'idade', label: 'Idade' }, { name: 'filhos', label: 'Filhos' }, { name: 'pontos', label: 'Pontos' } ];
+    
   useEffect(() => {
     loadAssociates();
   }, []);
@@ -99,7 +88,7 @@ export function Associados() {
   
     setPagedAssociates(filteredData);
   };
-    
+
   const handleSearch = (term) => {
     const lowerCaseTerm = term.toLowerCase();
     const filteredData = associates.filter(
