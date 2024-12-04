@@ -1,6 +1,7 @@
 eventocadastroedicao: fazer
 marcarpresenca: fazer
-Login: fazer
+
+Login: fazer -> FECHEI O CAIXA :P (ASS: TB)
 
 usuario: terminar html e fazer css
 
