@@ -26,21 +26,20 @@ export function HomeAdmin() {
 
     return (
         <>
-            <div className='mainGrid'>
+            <div className='homeAdminmainGrid'>
                 <h1>Home</h1>
-                <i class='fas fa-user-plus'></i>
-                <div className='buttons'>
-                    <button id='ass' className='botaoRed'>Associados</button>
-                    <button id='eve' className='botaoRed'>Eventos</button>
-                    <button id='rel' className='botaoRed'>Relatorios</button>
+                <div className='homeAdminbuttons'>
+                    <button id='homeAdminass' className='homeAdminbotaoRed'>Associados</button>
+                    <button id='homeAdmineve' className='homeAdminbotaoRed'>Eventos</button>
+                    <button id='homeAdminrel' className='homeAdminbotaoRed'>Relatorios</button>
                 </div>
                 <h2>Eventos ativos</h2>
-                <div className='events'>
+                <div className='homeAdminevents'>
                     {activeEvents.map(activeEvent => (
-                        <div className='event'>
-                            <h3 id='eventInfo' >{activeEvent.nome} - {activeEvent.data}</h3>
-                            <button id='eventButtonDesktop'><FaUserPlus></FaUserPlus>&nbsp;&nbsp;&nbsp; Adicionar Presenca</button>
-                            <button id='eventButtonMobile'><FaUserPlus></FaUserPlus></button>
+                        <div className='homeAdminevent'>
+                            <h3 id='homeAdmineventInfo' >{activeEvent.nome} - {activeEvent.data}</h3>
+                            <button id='homeAdmineventButtonDesktop'><FaUserPlus></FaUserPlus>&nbsp;&nbsp;&nbsp; Adicionar Presenca</button>
+                            <button id='homeAdmineventButtonMobile'><FaUserPlus></FaUserPlus></button>
                         </div>
                     ))}
                 </div>

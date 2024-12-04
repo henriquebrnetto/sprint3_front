@@ -1,4 +1,4 @@
-.mainGrid {
+.homeAdminmainGrid {
     width: 100%;
     /* border: 2cqb solid white; */
     /* border: 2px solid white; */
@@ -8,12 +8,12 @@
     margin-top: 45px;
 }
 
-.buttons {
+.homeAdminbuttons {
     display: flex;
     justify-content: space-evenly; 
 }
 
-.botaoRed {
+.homeAdminbotaoRed {
     flex-grow: .27;
     border: 0px;
     display: flex;
@@ -21,18 +21,18 @@
     justify-content: center;
 }
 
-.botaoRed:hover, #eventButtonDesktop:hover, #eventButtonMobile:hover {
+.homeAdminbotaoRed:hover, #homeAdmineventButtonDesktop:hover, #homeAdmineventButtonMobile:hover {
     filter: brightness(.7);
     outline: 0px;
     border: 0px;
     cursor: pointer;
 }
 
-.botaoRed:focus, #eventButtonDesktop:focus, #eventButtonMobile:focus {
+.homeAdminbotaoRed:focus, #homeAdmineventButtonDesktop:focus, #homeAdmineventButtonMobile:focus {
     outline: 0px;
 }
 
-.event {
+.homeAdminevent {
     display:flex;
     justify-content: flex-end;
     flex-direction: row;
@@ -43,11 +43,11 @@
     height: 30px;
 }
 
-#eventInfo {
+#homeAdmineventInfo {
     margin-right: auto;
 }
 
-#eventButtonDesktop, #eventButtonMobile {
+#homeAdmineventButtonDesktop, #homeAdmineventButtonMobile {
     border: 0px;
     /* width: 20vw; */
     display: flex;
@@ -55,23 +55,23 @@
     height: 55px;
 }
 
-#eventButtonMobile {
+#homeAdmineventButtonMobile {
     display: none;
     height: 55px;
 }
 
-#ass {
+#homeAdminass {
     grid-area: ass;
 }
-#eve {
+#homeAdmineve {
     grid-area: eve;
 }
-#rel {
+#homeAdminrel {
     grid-area: rel;
 }
 
 @media(max-width: 500px){
-    .buttons {
+    .homeAdminbuttons {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         grid-template-areas:
@@ -84,11 +84,11 @@
         width: 100%;
     }
 
-    #eventButtonMobile {
+    #homeAdmineventButtonMobile {
         display: flex;
     }
 
-    #eventButtonDesktop {
+    #homeAdmineventButtonDesktop {
         display: none;
     }
 }
