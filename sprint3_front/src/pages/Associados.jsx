@@ -16,6 +16,7 @@ export function Associados() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isFilterDialogOpen, setFilterDialogOpen] = useState(false);
   const [isOrderDialogOpen, setOrderDialogOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
 
   const filterFields = [
     { name: 'idade', label: 'Idade', type: 'minmax', min: 0, max: 120 },
@@ -46,48 +47,48 @@ export function Associados() {
     }
   }, [searchTerm]);
 
-  const loadAssociates = () => {
-    const data = [
-      { nome: 'Alice', data: '2023-01-01', age: 25, hasChildren: true, id: '1' },
-      { nome: 'Bob', data: '2023-02-15', age: 30, hasChildren: false, id: '2' },
-      { nome: 'Charlie', data: '2022-12-10', age: 40, hasChildren: true, id: '3' },
-    ];
-
-    setAssociates(data);
-    setPagedAssociates(data); // Initialize with full data
+  const loadAssociates = async (page = 0) => {
+    // Construct query parameters
+    const queryParams = new URLSearchParams();
+  
+    // Add filter values to the query
+    queryParams.append('idadeMinima', filters.idade ? filters.idade[0] : null);
+    queryParams.append('idadeMaxima', filters.idade ? filters.idade[1] : null);
+    queryParams.append('casado', filters.casado !== 'Todos' ? filters.casado : null);
+    queryParams.append('sexo', filters.sexo !== 'Todos' ? filters.sexo : null);
+    queryParams.append('filhosMinimo', filters.filhos ? filters.filhos[0] : null);
+    queryParams.append('filhosMaximo', filters.filhos ? filters.filhos[1] : null);
+    queryParams.append('status', filters.status !== 'Todos' ? filters.status : null);
+  
+    // Add pagination and sorting values to the query
+    queryParams.append('page', page);
+    queryParams.append('size', 10); // Assuming a page size of 10
+    queryParams.append('sortBy', orderBy.field || 'nome');
+    queryParams.append('sortDirection', orderBy.direction || 'asc');
+  
+    // Build the full URL
+    const url = `http://localhost:8081/associados?${queryParams.toString()}`;
+  
+    try {
+      // Fetch data from the server
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to load data: ${response.statusText}`);
+      }
+      const data = await response.json();
+  
+      // Update states
+      setAssociates(data.content || []); // Assuming the API returns data in a `content` field
+      setPagedAssociates(data.content || []);
+    } catch (error) {
+      console.error('Error loading associates:', error);
+    }
   };
+  
 
   const applyFiltersAndSorting = () => {
-    let filteredData = [...associates];
-  
-    filteredData = filteredData.filter((assoc) => {
-      const { nome, data, ageRange, hasChildren } = filters;
-  
-      const matchesName = !nome || assoc.nome.toLowerCase().includes(nome.toLowerCase());
-      const matchesDate = !data || assoc.data.includes(data);
-      const matchesAge =
-        !ageRange ||
-        (assoc.age >= (ageRange[0] || 0) && assoc.age <= (ageRange[1] || 100));
-  
-      // Handle hasChildren filter
-      const matchesHasChildren =
-        hasChildren === 'both' ||
-        hasChildren === undefined ||
-        assoc.hasChildren === hasChildren;
-  
-      return matchesName && matchesDate && matchesAge && matchesHasChildren;
-    });
-  
-    filteredData.sort((a, b) => {
-      if (orderBy.direction === 'asc') {
-        return String(a[orderBy.field]).localeCompare(String(b[orderBy.field]));
-      } else {
-        return String(b[orderBy.field]).localeCompare(String(a[orderBy.field]));
-      }
-    });
-  
-    setPagedAssociates(filteredData);
-  };
+    loadAssociates(); // Reload data based on updated filters and sorting
+  };  
 
   const handleSearch = (term) => {
     const lowerCaseTerm = term.toLowerCase();
@@ -98,6 +99,18 @@ export function Associados() {
     );
 
     setPagedAssociates(filteredData);
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => prev + 1);
+    loadAssociates(currentPage + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage((prev) => prev - 1);
+      loadAssociates(currentPage - 1);
+    }
   };
 
   return (
@@ -149,21 +162,41 @@ export function Associados() {
         </div>
       </div>
 
+      <div className="pagination">
+        <button onClick={handlePreviousPage} disabled={currentPage === 0}>
+          Previous
+        </button>
+        <button onClick={handleNextPage}>
+          Next
+        </button>
+      </div>
+
+
       <FilterDialog
         open={isFilterDialogOpen}
         onClose={() => setFilterDialogOpen(false)}
-        onApply={setFilters}
+        onApply={(newFilters) => {
+          setFilters(newFilters);
+          setCurrentPage(0); // Reset to first page
+          loadAssociates(0); // Reload data with new filters
+        }}
         initialFilters={filters}
         fieldDefinitions={filterFields}
       />
 
+
       <OrderDialog
         open={isOrderDialogOpen}
         onClose={() => setOrderDialogOpen(false)}
-        onApply={setOrderBy}
+        onApply={(newOrderBy) => {
+          setOrderBy(newOrderBy);
+          setCurrentPage(0); // Reset to first page
+          loadAssociates(0); // Reload data with new sorting
+        }}
         initialOrder={orderBy}
         fields={orderFields}
       />
+
     </>
   );
 }
