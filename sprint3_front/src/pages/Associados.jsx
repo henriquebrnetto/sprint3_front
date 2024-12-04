@@ -21,7 +21,16 @@ export function Associados() {
     { name: 'nome', label: 'Name', type: 'text' },
     { name: 'data', label: 'Date', type: 'text' },
     { name: 'ageRange', label: 'Age Range', type: 'minmax', min: 0, max: 100 },
-    { name: 'hasChildren', label: 'Has Children', type: 'checkbox' },
+    {
+      name: 'hasChildren',
+      label: 'Has Children',
+      type: 'threeOptions', // New type
+      options: [
+        { value: 'both', label: 'Both' },
+        { value: true, label: 'Yes' },
+        { value: false, label: 'No' },
+      ],
+    }
   ];
 
   const orderFields = [
@@ -61,7 +70,7 @@ export function Associados() {
 
   const applyFiltersAndSorting = () => {
     let filteredData = [...associates];
-  
+    
     // Apply filters
     filteredData = filteredData.filter((assoc) => {
       const { nome, data, ageRange, hasChildren } = filters;
@@ -71,11 +80,14 @@ export function Associados() {
       const matchesAge =
         !ageRange ||
         (assoc.age >= (ageRange[0] || 0) && assoc.age <= (ageRange[1] || 100));
-      const matchesHasChildren = hasChildren === undefined || assoc.hasChildren === hasChildren;
+      
+      // Handle hasChildren filter
+      const matchesHasChildren =
+        hasChildren === 'both' || hasChildren === undefined || assoc.hasChildren === hasChildren;
   
       return matchesName && matchesDate && matchesAge && matchesHasChildren;
     });
-  
+    
     // Apply sorting
     filteredData.sort((a, b) => {
       if (orderBy.direction === 'asc') {
@@ -84,10 +96,9 @@ export function Associados() {
         return String(b[orderBy.field]).localeCompare(String(a[orderBy.field]));
       }
     });
-  
+    
     setPagedAssociates(filteredData);
   };
-  
 
   const handleSearch = (term) => {
     const lowerCaseTerm = term.toLowerCase();
