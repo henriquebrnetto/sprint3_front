@@ -13,16 +13,29 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 
-const FilterDialog = ({ open, onClose, onApply, fieldDefinitions, initialFilters, onReset }) => {
+const FilterDialog = ({ open, onClose, onApply, fieldDefinitions, initialFilters }) => {
   const [filters, setFilters] = useState(initialFilters);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFilters((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-  };
+    const { name, value } = e.target;
+  
+    setFilters((prev) => {
+      // Handle `threeOptions` fields explicitly
+      const field = fieldDefinitions.find((field) => field.name === name);
+      if (field?.type === 'threeOptions') {
+        return {
+          ...prev,
+          [name]: value === 'true' ? true : value === 'false' ? false : 'both',
+        };
+      }
+  
+      // Default handling for other field types
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
+  };  
 
   const handleSliderChange = (name, newValue) => {
     setFilters((prev) => ({
@@ -43,7 +56,6 @@ const FilterDialog = ({ open, onClose, onApply, fieldDefinitions, initialFilters
 
     setFilters(resetFilters); // Reset local state
     onApply(resetFilters); // Update parent state
-    onReset(); // Reset filters in parent state (reset behavior)
   };
 
   const handleApply = () => {
@@ -85,11 +97,11 @@ const FilterDialog = ({ open, onClose, onApply, fieldDefinitions, initialFilters
                 <Select
                   label={field.label}
                   name={field.name}
-                  value={filters[field.name] || 'both'}
+                  value={filters[field.name] !== undefined ? String(filters[field.name]) : 'both'}
                   onChange={handleChange}
                 >
                   {field.options.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
+                    <MenuItem key={option.value} value={String(option.value)}>
                       {option.label}
                     </MenuItem>
                   ))}

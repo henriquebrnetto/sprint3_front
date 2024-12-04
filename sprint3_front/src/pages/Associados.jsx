@@ -70,8 +70,7 @@ export function Associados() {
 
   const applyFiltersAndSorting = () => {
     let filteredData = [...associates];
-    
-    // Apply filters
+  
     filteredData = filteredData.filter((assoc) => {
       const { nome, data, ageRange, hasChildren } = filters;
   
@@ -80,15 +79,16 @@ export function Associados() {
       const matchesAge =
         !ageRange ||
         (assoc.age >= (ageRange[0] || 0) && assoc.age <= (ageRange[1] || 100));
-      
+  
       // Handle hasChildren filter
       const matchesHasChildren =
-        hasChildren === 'both' || hasChildren === undefined || assoc.hasChildren === hasChildren;
+        hasChildren === 'both' ||
+        hasChildren === undefined ||
+        assoc.hasChildren === hasChildren;
   
       return matchesName && matchesDate && matchesAge && matchesHasChildren;
     });
-    
-    // Apply sorting
+  
     filteredData.sort((a, b) => {
       if (orderBy.direction === 'asc') {
         return String(a[orderBy.field]).localeCompare(String(b[orderBy.field]));
@@ -96,10 +96,10 @@ export function Associados() {
         return String(b[orderBy.field]).localeCompare(String(a[orderBy.field]));
       }
     });
-    
+  
     setPagedAssociates(filteredData);
   };
-
+    
   const handleSearch = (term) => {
     const lowerCaseTerm = term.toLowerCase();
     const filteredData = associates.filter(
