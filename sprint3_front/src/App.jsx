@@ -6,6 +6,10 @@ import mst from './assets/mst.jpg';
 
 import { HomeAdmin } from './pages/HomeAdmin'
 import { Associados } from './pages/Associados'
+import { Eventos } from './pages/Eventos'
+import { Evento } from './pages/Evento'
+import { Associado } from './pages/Associado'
+import { AssociadoCadastroEdicao } from './pages/AssociadoCadastroEdicao'
 
 import { HashRouter, Link, Route, Routes } from 'react-router-dom'
 
@@ -52,7 +56,13 @@ function App() {
       
       <Routes>
         <Route path="/homeadmin" element={<HomeAdmin/>}/>
+        
+        <Route path='/eventos' element={<Eventos/>}/>
+        <Route path='/evento/:eventId' element={<Evento/>}/>
+
         <Route path='/associados' element={<Associados/>}/>
+        <Route path='/associado/:associateRegistration' element={<Associado/>}/>
+        <Route path='/associadoCadastroEdicao/:associateRegistration' element={<AssociadoCadastroEdicao/>}/>
       </Routes>  
     </>
   );

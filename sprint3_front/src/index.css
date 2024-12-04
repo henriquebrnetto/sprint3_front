@@ -13,6 +13,7 @@
   -moz-osx-font-smoothing: grayscale;
 
   padding: 0px;
+  margin: none;
 }
 
 #root {
@@ -22,6 +23,7 @@
   align-items: top;
   min-height: 100vh;
   padding: 0px;
+  margin: none;
 
 }
 

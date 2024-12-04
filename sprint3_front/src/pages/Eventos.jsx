@@ -1,49 +1,49 @@
 import { useEffect, useState } from 'react';
 
-import './style/Associados.css';
+import './style/Eventos.css';
 import { IoArrowBack } from 'react-icons/io5';
-import { FaFilter, FaSortAmountDown, FaSearch, FaTrash, FaPencilAlt  } from 'react-icons/fa';
+import { FaFilter, FaSortAmountDown, FaSearch, FaTrash, FaPencilAlt, FaCalendar  } from 'react-icons/fa';
 import { Autocomplete, Pagination, TextField } from "@mui/material";
 
-export function Associados() {
+export function Eventos() {
 
-    const [associates, setAssociates] = useState([]);
+    const [events, setEvents] = useState([]);
     const [maxPages, setMaxPages] = useState(1);
     const [pageN, setPageN] = useState(0);
-    const [pagedAssociates, setPagedAssociates] = useState([]);
+    const [pagedEvents, setPagedEvents] = useState([]);
 
     useEffect(() => {
-        loadAssociates();
+        loadEvents();
         loadMaxPages();
-        loadPagedAssociates();
+        loadPagedEvents();
     }, [])
 
-    function loadPagedAssociates(pageN) {
+    function loadPagedEvents(pageN) {
         // fetch('localhost:8081/associados?idadeMinima=null&idadeMaxima=null&casado=null&sexo=null&filhosMinimo=null&filhosMaximo=null&status=null&page={pageN}&size=10&sortBy=nome&sortDirection=asc')
-        //     .then(response => response.json())
-        //     .then(data => setAssociates(data))
-        //     .catch(error => console.error('Erro ao carregar associados:', error));
-        const data = [{
-            'nome': 'Coisa boa da silva',
-            'data': '23/04/2025',
-            'id': '98369420',
-        }];
-
-        setPagedAssociates(data)
-    }
-
-    function loadAssociates() {
-        // fetch('urlback')
         //     .then(response => response.json())
         //     .then(data => setActiveEvents(data))
         //     .catch(error => console.error('Erro ao carregar eventos ativos:', error));
         const data = [{
             'nome': 'Coisa boa da silva',
             'data': '23/04/2025',
+            'id': '98369420',
+        }];
+
+        setPagedEvents(data)
+    }
+
+    function loadEvents() {
+        // fetch('urlback')
+        //     .then(response => response.json())
+        //     .then(data => setEvents(data))
+        //     .catch(error => console.error('Erro ao carregar eventos:', error));
+        const data = [{
+            'nome': 'Coisa boa da silva',
+            'data': '23/04/2025',
             'matricula': '98369420',
         }];
 
-        setAssociates(data)
+        setEvents(data)
     }
 
     function loadMaxPages() {
@@ -55,8 +55,7 @@ export function Associados() {
     const handleSearch = (options, { inputValue }) => {
         return options.filter(
         (option) =>
-            option.nome.toLowerCase().includes(inputValue.toLowerCase()) ||
-            String(option.matricula).includes(inputValue)
+            option.nome.toLowerCase().includes(inputValue.toLowerCase())
         );
     };
 
@@ -66,15 +65,17 @@ export function Associados() {
 
     return (
         <>
-            <div className='AssociadosmainGrid'>
-                <div className='AssociadospreviousPage'>
-                    <button  id='AssociadospreviousPageButton'><IoArrowBack></IoArrowBack></button>
+            <div className='eventosMainGrid'>
+                <div className='eventosPreviousPage'>
+                    <button  id='eventosPreviousPageButton'><IoArrowBack></IoArrowBack></button>
                 </div>
-                <div className='AssociadostopSection'>
-                    <button className='Associadosfilter'><FaFilter></FaFilter></button>
+                <div className='eventosTopSection'>
+                    <button className='eventosFilter'><FaFilter></FaFilter></button>
                     <Autocomplete
-                        className='AssociadossearchBar'
-                        options={associates}
+                        autoHighlight={true}
+                        clearIcon={true}
+                        className='eventosSearchBar'
+                        options={events}
                         freeSolo
                         getOptionLabel={(option) => option.nome}
                         filterOptions={handleSearch}
@@ -84,7 +85,7 @@ export function Associados() {
 
                                 label={
                                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <FaSearch /> Buscar associado
+                                        <FaSearch /> Buscar evento
                                     </span>
                                 }
 
@@ -120,22 +121,23 @@ export function Associados() {
                             />
                         )}
                     />
-                    <button className='Associadosorderby'><FaSortAmountDown></FaSortAmountDown></button>
+                    <button className='eventosCalendar'><FaCalendar></FaCalendar></button>
+                    <button className='eventosOrderby'><FaSortAmountDown></FaSortAmountDown></button>
                 </div>
-                <h2 className='AssociadostituloAssociados'>Associados:</h2>
-                <div className='AssociadosAssociados'>
-                    {pagedAssociates.map((associate, index) => (
-                        <div className='Associadosassociate' key={index}>
-                            <button className='AssociadosassociateBox'>
-                                <h3 id='AssociadosassociateName'>{associate.nome}</h3>
+                <h2 className='eventosTituloEventos'>Eventos:</h2>
+                <div className='eventosEventos'>
+                    {pagedEvents.map((event, index) => (
+                        <div className='eventosEvent' key={index}>
+                            <button className='eventosEventBox'>
+                                <h3 id='eventName'>{event.nome}</h3>
                             </button>
-                            <button className='AssociadoseditButton'><FaPencilAlt></FaPencilAlt></button>
-                            <button className='AssociadosdeleteButton'><FaTrash></FaTrash></button>
+                            <button className='eventosEditButton'><FaPencilAlt></FaPencilAlt></button>
+                            <button className='eventosDeleteButton'><FaTrash></FaTrash></button>
                         </div>
                     ))}
                 </div>
                 {maxPages > 1 ? (
-                    <Pagination count={maxPages} page={pageN + 1} onChange={handlePageChange} className='AssociadosnavBar' sx={{justifyContent:"center", alignItems: "center", display:"flex", marginTop:"15px"}}/>
+                    <Pagination count={maxPages} page={pageN + 1} onChange={handlePageChange} className='eventosNavBar' sx={{justifyContent:"center", alignItems: "center", display:"flex", marginTop:"15px"}}/>
                 ):(
                     <></>
                 )}

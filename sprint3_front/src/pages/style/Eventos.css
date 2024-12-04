@@ -1,21 +1,25 @@
-.AssociadosmainGrid {
+body {
+    display: flex;
+}
+
+.eventosMainGrid {
     width: 100%;
     /* border: 2cqb solid white; */
     /* border: 2px solid white; */
     padding: 0px;
-    /* padding: 15px; */
+    padding: 15px;
     margin: 20px;
-    margin-top: 75px;
+    margin-top: 55px;
 }
 
-.AssociadospreviousPage {
+.eventosPreviousPage {
     display: flex;
     margin-bottom: 5px;
     align-items: center;
     justify-content: flex-start;
 }
 
-#AssociadospreviousPageButton {
+#eventosPreviousPageButton {
     background-color: rgba(0,0,0,0);
     border-radius: 1000px;
     color: rgba(18, 18, 18, 0.87);
@@ -26,34 +30,37 @@
     border: none;
 }
 
-#AssociadospreviousPageButton:hover {
+#eventosPreviousPageButton:hover {
     background-color: rgba(18, 18, 18, 0.1);
     border: none;
 }
 
-.AssociadostopSection {
+.eventosTopSection {
     display: flex;
     gap: 5px;
 }
 
-.AssociadossearchBar {
+.eventosSearchBar {
     flex-grow: 1;
     color: white;
 }
 
-.AssociadostituloAssociados {
+.eventosTituloEventos {
     display: flex;
     align-items: flex-start;
 }
 
-.Associadosassociate {
+.eventosEvent {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    background: none;
+    padding: 0;
+    padding-top: 15px;
 }
 
-.AssociadosassociateBox {
+.eventosEventBox {
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -64,14 +71,17 @@
     height: 60px;
 }
 
-.AssociadoseditButton, .AssociadosdeleteButton {
+.eventosEditButton, .eventosDeleteButton {
     height: 60px;
 }
 
+
 @media (max-width:600px) {
-    .AssociadosmainGrid {
+    .EventosmainGrid {
         margin: 15px;
         margin-top: 75px;
     }
 }
+
+
 
