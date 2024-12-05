@@ -46,13 +46,16 @@ function App() {
 
           {/* Ícone de Logout, visível somente quando o usuário está logado */}
           {isLoggedIn && (
-            <Box sx={{ flexGrow: 0, mr: { xs: 1, sm: 2, md: 5 } }}>
-              <Tooltip title="Logout">
-                <IconButton color="inherit">
-                  <LogoutIcon sx={{ fontSize: { xs: '1rem', sm: '1.5rem', md: '1.75rem' } }} />
-                </IconButton>
-              </Tooltip>
-            </Box>
+            <Link to={'/'}>
+              <Box sx={{ flexGrow: 0, mr: { xs: 1, sm: 2, md: 5 } }}>
+                <Tooltip title="Logout">
+                  <IconButton color="inherit">
+                    <LogoutIcon sx={{ fontSize: { xs: '1rem', sm: '1.5rem', md: '1.75rem' } }} />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </Link>
+            
           )}
         </Toolbar>
       </AppBar>

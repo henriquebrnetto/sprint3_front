@@ -7,6 +7,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import { Link } from 'react-router-dom';
 
 export function Login() {
   const [loginType, setLoginType] = useState('user'); // Default to admin
@@ -88,14 +89,17 @@ export function Login() {
             margin="normal"
           />
         )}
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit}
-          style={{ marginTop: '20px' }}
-        >
-          Login
-        </Button>
+        <Link to={loginType === 'user' ? '/associado/H98369' : '/homeadmin'}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+            style={{ marginTop: '20px' }}
+          >
+            Login
+          </Button>
+        </Link>
+        
       </div>
     </div>
   );
