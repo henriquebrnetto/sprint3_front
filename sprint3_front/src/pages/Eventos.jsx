@@ -11,12 +11,11 @@ export function Eventos() {
 
   const [events, setEvents] = useState([]);
   const [pagedEvents, setPagedEvents] = useState([]);
-  const [filters, setFilters] = useState({});
   const [orderBy, setOrderBy] = useState({ field: 'nome', direction: 'asc' });
   const [searchTerm, setSearchTerm] = useState('');
   const [isOrderDialogOpen, setOrderDialogOpen] = useState(false);
+  const [filters, setFilters] = useState({ startDate: '', endDate: '', status: 'Todos' });
   const [isDateDialogOpen, setDateDialogOpen] = useState(false);
-  const [dateFilters, setDateFilters] = useState({ startDate: '', endDate: '', status: 'Todos' });
 
   const [currentPage, setCurrentPage] = useState(0);
   const [maxPages, setMaxPages] = useState(1);
@@ -28,9 +27,9 @@ export function Eventos() {
     loadEvents();
   }, [filters, orderBy, currentPage]);
 
-  const applyDateFilter = (dates) => {
-    setDateFilters(dates);
-    setCurrentPage(0); // Reset to the first page when applying new filters
+  const applyDateFilter = (newFilters) => {
+    setFilters(newFilters);
+    setCurrentPage(0); // Reset to the first page
   };
  
 
@@ -38,23 +37,21 @@ export function Eventos() {
     const elementPerPage = 10;
     const queryParams = new URLSearchParams();
   
-    // Existing filters
-    if (filters.status && filters.status !== 'Todos') {
-      queryParams.append('status', filters.status);
+    // Conditionally add date filters if they are not empty
+    if (filters.startDate) {
+      queryParams.append('dataInicio', filters.startDate);  // Already in 'yyyy-MM-dd' format
+    }
+    if (filters.endDate) {
+      queryParams.append('dataFim', filters.endDate);  // Already in 'yyyy-MM-dd' format
     }
   
-    // Add date filters if they are not empty
-    if (dateFilters.startDate) {
-      queryParams.append('startDate', dateFilters.startDate);
+    // Map status: Only add 'status' if it's 'Ativos' or 'Inativos'
+    if (filters.status === 'Ativos') {
+      queryParams.append('status', true);
+    } else if (filters.status === 'Inativos') {
+      queryParams.append('status', false);
     }
-    if (dateFilters.endDate) {
-      queryParams.append('endDate', dateFilters.endDate);
-    }
-  
-    // Add status filter if it’s not 'Todos'
-    if (dateFilters.status && dateFilters.status !== 'Todos') {
-      queryParams.append('status', dateFilters.status);
-    }
+    // 'Todos' status is ignored (default to no filter)
   
     queryParams.append('sortBy', orderBy.field || 'nome');
     queryParams.append('sortDirection', orderBy.direction || 'asc');
@@ -62,7 +59,8 @@ export function Eventos() {
     queryParams.append('size', elementPerPage);
   
     const url = `http://localhost:8081/api/v1/eventos?${queryParams.toString()}`;
-  
+    console.log(url)
+
     try {
       const response = await fetch(url, { method: 'GET', mode: 'cors' });
       if (!response.ok) {
@@ -75,18 +73,7 @@ export function Eventos() {
     } catch (error) {
       console.error('Error loading events:', error);
     }
-  };
-
-  const handleSearch = (term) => {
-    const lowerCaseTerm = term.toLowerCase();
-    const filteredData = events.filter(
-      (event) =>
-        event.nome.toLowerCase().startsWith(lowerCaseTerm) ||
-        String(event.id).toLowerCase().startsWith(lowerCaseTerm)
-    );
-
-    setPagedEvents(filteredData);
-  };
+  };  
   
 return (
   <>
@@ -148,6 +135,7 @@ return (
         open={isDateDialogOpen}
         onClose={() => setDateDialogOpen(false)}
         onApply={applyDateFilter}
+        initialFilters={filters}  // Pass the existing filter state
       />
 
       <OrderDialog

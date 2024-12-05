@@ -1,23 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, MenuItem } from '@mui/material';
 
-const DateFilterDialog = ({ open, onClose, onApply }) => {
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [status, setStatus] = useState('Todos'); // Default value
+const DateFilterDialog = ({ open, onClose, onApply, initialFilters }) => {
+  const [filters, setFilters] = useState({
+    startDate: '',
+    endDate: '',
+    status: 'Todos',
+  });
 
-  // Handle reset button click
+  useEffect(() => {
+    // Initialize with existing filters if available
+    setFilters(initialFilters || { startDate: '', endDate: '', status: 'Todos' });
+  }, [initialFilters]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   const handleReset = () => {
-    setStartDate('');
-    setEndDate('');
-    setStatus('Todos'); // Reset status filter
-    onApply({ startDate: '', endDate: '', status: 'Todos' }); // Send empty values to reset filters
-    onClose(); // Close the dialog after resetting filters
+    const resetFilters = { startDate: '', endDate: '', status: 'Todos' };
+    setFilters(resetFilters);
+    onApply(resetFilters);  // Apply reset filters
   };
 
   const handleApply = () => {
-    onApply({ startDate, endDate, status });
-    onClose(); // Close the dialog after applying filters
+    onApply(filters);  // Send filters to the parent component
+    onClose();         // Close the dialog
   };
 
   return (
@@ -26,33 +38,34 @@ const DateFilterDialog = ({ open, onClose, onApply }) => {
       <DialogContent>
         <TextField
           label="Start Date"
+          name="startDate"
           type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
+          value={filters.startDate}
+          onChange={handleChange}
           fullWidth
-          InputLabelProps={{ shrink: true }}
           margin="dense"
         />
         <TextField
           label="End Date"
+          name="endDate"
           type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
+          value={filters.endDate}
+          onChange={handleChange}
           fullWidth
-          InputLabelProps={{ shrink: true }}
           margin="dense"
         />
         <TextField
           select
           label="Status"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
+          name="status"
+          value={filters.status}
+          onChange={handleChange}
           fullWidth
           margin="dense"
         >
           <MenuItem value="Todos">Todos</MenuItem>
-          <MenuItem value="Ativos">Ativos</MenuItem>
-          <MenuItem value="Inativos">Inativos</MenuItem>
+          <MenuItem value='Ativos'>Ativos</MenuItem>
+          <MenuItem value='Inativos'>Inativos</MenuItem>
         </TextField>
       </DialogContent>
       <DialogActions>
