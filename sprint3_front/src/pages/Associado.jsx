@@ -9,6 +9,7 @@ export function Associado() {
     const [associate, setAssociate] = useState([]);
     const [calendarEvents, setCalendarEvents] = useState([]);
     const [presenceData, setPresenceData] = useState([]); // Initialize as empty array
+    const [isDialogOpen, setIsDialogOpen] = useState(false); // Dialog visibility state
 
     useEffect(() => {
         loadAssociate();
@@ -53,6 +54,10 @@ export function Associado() {
         if (event.status === 'future') return 'tile-blue';
     };
 
+    const toggleDialog = () => {
+        setIsDialogOpen(!isDialogOpen);
+    };
+
     return (
         <div className='associadoMainGrid'>
             <div className='associadoPreviousPage'>
@@ -72,6 +77,9 @@ export function Associado() {
                 </div>
                 <div className='associadoImage'>
                     <img src='/images/defaultProfile.png' alt='Associado' className='profileImage' />
+                    <button className='moreInfoButton' onClick={toggleDialog}>
+                        Mais Informações
+                    </button>
                 </div>
             </div>
             <div className='associadoBottomSection'>
@@ -109,6 +117,20 @@ export function Associado() {
                     </div>
                 </div>
             </div>
+            {/* Dialog Box */}
+            {isDialogOpen && (
+                <div className='dialogOverlay'>
+                    <div className='dialogBox'>
+                        <h2>Mais Informações</h2>
+                        <p>Endereço: Rua Fictícia, 123</p>
+                        <p>Telefone: (11) 1234-5678</p>
+                        <p>Email: usuario@exemplo.com</p>
+                        <button className='closeButton' onClick={toggleDialog}>
+                            Fechar
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

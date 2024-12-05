@@ -34,19 +34,6 @@
     text-align: left;
 }
 
-.associadoImage {
-    flex: 1;
-    text-align: right;
-}
-
-.associadoImage img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    border: 2px solid #ddd;
-    object-fit: cover;
-}
-
 .calendar-events-container {
     display: flex;
     justify-content: space-between;
@@ -96,4 +83,35 @@
     height: 16px;
     margin-right: 0.5rem;
     border-radius: 4px;
+}
+
+.associadoImage {
+    flex: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.associadoImage img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    object-fit: cover;
+    margin-bottom: 1rem;
+}
+
+.moreInfoButton {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.moreInfoButton:hover {
+    background-color: #0056b3;
 }
