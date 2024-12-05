@@ -27,7 +27,7 @@ export function Associados() {
     { name: 'filhos', label: 'Filhos', type: 'minmax', min: 0, max: 20 },
     { name: 'status', label: 'Status', type: 'threeOptions', default: 'Todos', options: [ { value: true, label: 'Ativo' }, { value: false, label: 'Bloqueado' }, { value: 'Todos', label: 'Todos' } ] } ];  
 
-    const orderFields = [ { name: 'nome', label: 'Nome' }, { name: 'idade', label: 'Idade' }, { name: 'filhos', label: 'Filhos' }, { name: 'pontos', label: 'Pontos' } ];
+  const orderFields = [ { name: 'nome', label: 'Nome' }, { name: 'idade', label: 'Idade' }, { name: 'filhos', label: 'Filhos' }, { name: 'pontos', label: 'Pontos' } ];
 
   useEffect(() => {
     const debounce = setTimeout(() => {
