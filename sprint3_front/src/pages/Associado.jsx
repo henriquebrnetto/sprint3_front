@@ -22,10 +22,8 @@ export function Associado() {
     const [pageN, setPageN] = useState(0);
 
     useEffect(() => {
-        loadPagedAssociateEvents();
-        loadMaxPages();
-        loadAssociateEvents();
         loadAssociate();
+        loadAssociateEvents();
     }, [])
 
     // funcoes para definir constantes acima
@@ -44,21 +42,6 @@ export function Associado() {
         setAssociateEvents(data)
     }
     
-    function loadPagedAssociateEvents(pageN, associateRegistration) {
-        // fetch(<>'localhost:8081/api/v1/eventos/{event.id}?page={pageN}&size=6'</>)
-        //     .then(response => response.json())
-        //     .then(data => setPagedPresences(data))
-        //     .catch(error => console.error('Erro ao carregar eventos ativos:', error));\
-        const data = [{ 
-            'nome': 'Coisa boa da silva',
-            'data': '23/04/2025',
-            'id': '98369420',
-            'camisa': false,
-        }];
-
-        setPagedAssociateEvents(data)
-    }
-
     function loadAssociate(associateRegistration) {
         // fetch(<>'localhost:8081/api/v1/presenca/evento/{event.id}'</>)
         //     .then(response => response.json())
@@ -75,20 +58,7 @@ export function Associado() {
 
     // -------
 
-    function loadMaxPages() {
-        setMaxPages(1)
-    }
-
-    const [selectedValue, setSelectedValue] = useState(null);
-
     // lidar com buscas e mudanca de paginacao
-
-    const handleSearch = (options, { inputValue }) => {
-        return options.filter(
-        (option) =>
-            option.associadoNome.toLowerCase().includes(inputValue.toLowerCase())
-        );
-    };
 
     const handlePageChange = (event, value) => {
         setPageN(value - 1);
@@ -106,7 +76,7 @@ export function Associado() {
                     <div className='associadoInfo'>
                         <div className='associadoInfoName'>
                             <h3 id='associadoInfoNameTitle'>Nome: </h3>
-                            <p id='associadoInfoNameTitle'>Nome: </p>
+                            <p id='associadoInfoNameContent'>{}</p>
                         </div>
                     </div>
                     <div className='associadoInfoButton'>

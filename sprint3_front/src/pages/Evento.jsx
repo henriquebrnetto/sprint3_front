@@ -15,7 +15,10 @@ export function Evento() {
 
     const [event, setEvent] = useState([]);
     const [pagedPresences, setPagedPresences] = useState([]);
-    const [allPresences, setAllPresences] = useState([]);
+    const [presences, setPresences] = useState([]);
+    const [filteredPresences, setFilteredPresences] = useState([]);
+    const [filter, setFilter] = useState('')
+
     
     const [maxPages, setMaxPages] = useState(1);
     const [pageN, setPageN] = useState(0);
@@ -54,47 +57,71 @@ export function Evento() {
           setMaxPages(data.totalPages)
     
         } catch (error) {
-          console.error('Error loading associates:', error);
+          console.error('Error loading events:', error);
         }
     
     }; 
 
-    function loadEvent(eventId) {
-        // fetch(<>localhost:8081/api/v1/eventos/{event.id}</>)
-        //     .then(response => response.json())
-        //     .then(data => setEvents(data))
-        //     .catch(error => console.error('Erro ao carregar eventos:', error));
-        const data = [{
-            'nome': 'Coisa boa da silva',
-            'data': '23/04/2025',
-            'matricula': '98369420',
-        }];
+    const loadEvent = async (eventId) => {
 
-        setEvent(data)
+        const url = `http://localhost:8081/api/v1/eventos/${eventId}`
+
+        try {
+            const response = await fetch(url, { method: 'GET', mode: 'cors' });
+            if (!response.ok) {
+              throw new Error(`Failed to load data: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+        
+            setEvent(data.content || {})
+      
+          } catch (error) {
+            console.error('Error loading event:', error);
+        }
     }
 
-    
+    const deletePresence = async (presenceId) => {
 
-    function loadMaxPages() {
-        setMaxPages(1)
+        const url = `http://localhost:8081/api/v1/presencas/${presenceId}`
+
+        try {
+            const response = await fetch(url, { method: 'DELETE', mode: 'cors' }); 
+        } catch (error) {
+            console.error('Error deleting event:', error);
+        }
     }
 
     const [selectedValue, setSelectedValue] = useState(null);
 
-
-
     const handleSearch = (options, { inputValue }) => {
-        return options.filter(
+
+        var nameRegistrationFilter = options.filter(
         (option) =>
-            option.nome.toLowerCase().includes(inputValue.toLowerCase())
+            String(option.matricula).startsWith(inputValue) || 
+                option.nome.toLowerCase().startsWith(inputValue.toLowerCase())
         );
+
+        setFilter(inputValue)
+        setFilteredPresences(nameRegistrationFilter)
+
+        return nameRegistrationFilter
     };
 
     const handlePageChange = (event, value) => {
         setPageN(value - 1);
     };
 
-
+    function handleFilter(filter, pagedPresences, filteredPresences) {
+        if (filter.length > 0){
+            return filteredPresences
+        }
+        return pagedPresences
+    }
+    
+    const flipStatus = () => {
+        updateField('status', !event.status)
+    };
 
     return (
         <>
@@ -116,12 +143,15 @@ export function Evento() {
                             <h2>Local:</h2>
                             <p>{event.local}</p>
                         </div>
+                        <button className='eventoEventActive' id={String(event.status)} onClick={flipStatus}>
+                            Ativo 
+                        </button>
                     </div>
                     <div className='eventoAssociateSearch'>
                         <Autocomplete
                             autoHighlight={true}
                             className='eventoSearchBar'
-                            options={allPresences} // ver com o back
+                            options={presences}
                             freeSolo
                             getOptionLabel={(option) => option.associadoNome}
                             filterOptions={handleSearch}
@@ -171,7 +201,7 @@ export function Evento() {
                 </div>
                 <h2 className='eventoAssociatesTitle'>Associados presentes no evento:</h2>
                 <div className='eventoAssociates'>
-                    {pagedPresences.map((presence, index) => (
+                    {handleFilter(filter, pagedPresences, filteredPresences).map((presence, index) => (
                         <div className='eventAssociate' key={index}>
                             <button className='eventoAssociateBox'>
                                 <h3 id='eventName'>{presence.nome}</h3>
@@ -181,11 +211,11 @@ export function Evento() {
                                     <LuShirt id='eventAssociateNoShirt'></LuShirt>
                                 )}
                             </button>
-                            <button className='eventosDeleteButton'><GrClose></GrClose></button>
+                            <button className='eventosDeleteButton' onClick={() => deletePresence(presence.id)}><GrClose></GrClose></button>
                         </div>
                     ))}
                 </div>
-                {maxPages > 1 ? (
+                {maxPages > 1 && filter.length > 0? (
                     <Pagination count={maxPages} page={pageN + 1} onChange={handlePageChange} className='eventosNavBar' sx={{justifyContent:"center", alignItems: "center", display:"flex", marginTop:"15px"}}/>
                 ):(
                     <></>
