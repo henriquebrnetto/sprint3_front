@@ -27,70 +27,138 @@ export function MarcarPresenca() {
     useEffect(() => {
         loadEvent(eventId);
 
-        loadPagedAssociates(pageN, eventId, nameFiltering, registrationFiltering);
-        loadAllAssociates(eventId, nameFiltering, registrationFiltering);
-        
-        loadMaxPages(eventId, nameFiltering, registrationFiltering);
+        loadAssociates();
     }, [])
 
-    function loadPagedAssociates(pageN, eventId, name, reg) {
-        // fetch(<>'localhost:8081/api/v1/presenca/evento/{eventId}?page={pageN}&size=6'</>)
-        //     .then(response => response.json())
-        //     .then(data => setPagedAssociates(data))
-        //     .catch(error => console.error('Erro ao carregar eventos ativos:', error));\
-        const data = [{ 
-            'nome': 'Coisa boa da silva',
-            'data': '23/04/2025',
-            'id': '98369420',
-            'camisa': false,
-        }];
+    const loadAssociates = async () => {
+        const elementPerPage = 10
+    
+        const queryParams = new URLSearchParams();
+    
+        queryParams.append('nome', nameFiltering)
+        queryParams.append('matricula', registrationFiltering)
+    
+        const urlAll = `http://localhost:8081/api/v1/associados?${queryParams.toString()}`;
+    
+        queryParams.append('page', currentPage);
+        queryParams.append('size', elementPerPage);
+        
+        const url = `http://localhost:8081/api/v1/associados?${queryParams.toString()}`;
+        
+        try {
+          const response = await fetch(url, { method: 'GET', mode: 'cors' });
+          if (!response.ok) {
+            throw new Error(`Failed to load data: ${response.statusText}`);
+          }
+          
+          const responseAll = await fetch(urlAll, { method: 'GET', mode: 'cors' });
+          if (!responseAll.ok) {
+            throw new Error(`Failed to load data: ${response.statusText}`);
+          }
+          
+          const data = await response.json();
+          const dataAll = await responseAll.json();
+    
+          setAssociates(dataAll.content || [])
+          setPagedAssociates(data.content || []);
+          setMaxPages(data.totalPages)
+    
+        } catch (error) {
+          console.error('Error loading associates:', error);
+        }
+    
+      }; 
 
-        setPagedAssociates(data)
+    const loadEvent = async (eventId) => {
+
+        const url = `http://localhost:8081/api/v1/eventos/${eventId}`
+
+        try {
+            const response = await fetch(url, { method: 'GET', mode: 'cors' });
+            if (!response.ok) {
+              throw new Error(`Failed to load data: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+        
+            setEvent(data.content || {})
+      
+          } catch (error) {
+            console.error('Error loading associates:', error);
+        }
     }
 
-    function loadAllAssociates(eventId, name, reg) {
-        // fetch(<>'localhost:8081/api/v1/presenca/evento/{eventId}'</>)
-        //     .then(response => response.json())
-        //     .then(data => setPagedAssociates(data))
-        //     .catch(error => console.error('Erro ao carregar eventos ativos:', error));\
-        const data = [{ 
-            'nome': 'Coisa boa da silva',
-            'data': '23/04/2025',
-            'matricula': '98369420',
-        }];
+    function getDate() {
+        const today = new Date();
+        const month = today.getMonth() + 1;
+        const year = today.getFullYear();
+        const date = today.getDate();
+        
+        var strmais = ''
 
-        setAllAssociates(data)
+        if (date < 10){
+            strmais = '0'
+        }
+        return `${year}-${month}-${strmais}${date}`;
     }
 
-    function loadEvent(eventId) {
-        // fetch(<>localhost:8081/api/v1/eventos/{event.id}</>)
-        //     .then(response => response.json())
-        //     .then(data => setEvents(data))
-        //     .catch(error => console.error('Erro ao carregar eventos:', error));
-        const data = {
-            'nome': 'Coisa boa da silva',
-            'data': '23/04/2025',
-            'matricula': '98369420',
-        };
+    const postPresence = async (eventId, eventName, associateId, associateName, type) => {
 
-        setEvent(data)
+        const url = `http://localhost:8081/api/v1/presencas`
+
+        var colab = type == 'colaborador'
+        var shirt = type == 'comCamisa'        
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                mode: 'cors',
+                body: {
+                    'associadoId': associateId,
+                    'associadoNome': associateName,
+                    'eventoId': eventId,
+                    'eventoNome': eventName,
+                    'colaborador': colab,
+                    'camisa': shirt,
+                    'data': getDate()
+                }
+            });
+
+            if (!response.ok) {
+              throw new Error(`Failed to post data: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+        
+            setEvent(data.content || {})
+      
+          } catch (error) {
+            console.error('Error loading associates:', error);
+        }
     }
 
-    function loadMaxPages() {
-        setMaxPages(1)
-    }
+
 
     // -----
 
-    function checkShirt(associateId) {
-        var response = 'falta'
-    
-        // fetch('localhost:8081/api/v1/presencas/associado/${associateId}/evento/${event.id}')
-        //     .then(response => response.json())
-        //     .then(data => response = data)
-        //     .catch(error => console.error('Erro ao carregar eventos:', error));
+    const checkShirt = async (associateId, eventId) => {
 
-        return response
+        const url = `http://localhost:8081/api/v1/presencas/associado/${associateId}/evento/${eventId}`
+
+        try {
+            const response = await fetch(url, { method: 'GET', mode: 'cors' });
+            if (!response.ok) {
+              throw new Error(`Failed to load data: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+        
+            return data.content
+      
+        } catch (error) {
+            console.error('Error loading associates:', error);
+        }
+
     }
 
     const handleSearch = (options, { inputValue }) => {
@@ -110,7 +178,7 @@ export function MarcarPresenca() {
             String(option.matricula).includes(inputValue)
         );
 
-        if (registrationFilterFilter.length > 0){
+        if (registrationFilter.length > 0){
             setRegistrationFiltering(inputValue)
         } else {
             setRegistrationFiltering(null)
@@ -129,19 +197,6 @@ export function MarcarPresenca() {
         setPageN(value - 1);
     };
 
-    const handleButton = (identifier) => {
-        if (identifier == 'colaborador'){
-
-        }
-        if (identifier == 'camisa'){
-
-        }
-        if (identifier == 'semCamisa'){
-
-        }
-
-    }
-
     // -----
 
     return (
@@ -156,7 +211,8 @@ export function MarcarPresenca() {
                         className='AssociadossearchBar'
                         options={allAssociates}
                         freeSolo
-                        getOptionLabel={(option) => option.nome}
+                        getOptionLabel={(option) => option.nome || ''}
+                        startdecorator={<FaSearch></FaSearch>}
                         filterOptions={handleSearch}
                         onChange={(event, newValue) => setSelectedValue(newValue)}
                         renderInput={(params) => (
@@ -229,9 +285,9 @@ export function MarcarPresenca() {
                             <button className={'marcarpresencaAssociate'} key={index} name={checkShirt(associate.id)}>
                                 <h3 id='marcarpresencaAssociateName'>{associate.nome}</h3>
                                 <div className='marcarpresencaShirtButtons'>
-                                    <button id={'marcarpresencaColaboratorButton'} disabled={checkShirt(associate.id) != 'falta'} name={checkShirt(associate.id)} onClick={() => handleButton('colaborador')}>Colaborador</button>
-                                    <button id={'marcarpresencaShirtOnButton'} disabled={checkShirt(associate.id) != 'falta'} name={checkShirt(associate.id)} onClick={() => handleButton('camisa')}><FaTshirt></FaTshirt></button>
-                                    <button id={'marcarpresencaShirtOffButton'} disabled={checkShirt(associate.id) != 'falta'} name={checkShirt(associate.id)} onClick={() => handleButton('semCamisa')}><LuShirt></LuShirt></button>
+                                    <button id={'marcarpresencaColaboratorButton'} disabled={checkShirt(associate.id) != 'falta'} name={checkShirt(associate.id)} onClick={() => postPresence(eventId, event.name, associate.id, associate.name, 'colaborador')}>Colaborador</button>
+                                    <button id={'marcarpresencaShirtOnButton'} disabled={checkShirt(associate.id) != 'falta'} name={checkShirt(associate.id)} onClick={() => postPresence(eventId, event.name, associate.id, associate.name, 'camisa')}><FaTshirt></FaTshirt></button>
+                                    <button id={'marcarpresencaShirtOffButton'} disabled={checkShirt(associate.id) != 'falta'} name={checkShirt(associate.id)} onClick={() => postPresence(eventId, event.name, associate.id, associate.name, 'semCamisa')}><LuShirt></LuShirt></button>
                                 </div>
                             </button>
                         ))}

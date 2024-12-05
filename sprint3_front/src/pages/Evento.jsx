@@ -21,40 +21,43 @@ export function Evento() {
     const [pageN, setPageN] = useState(0);
 
     useEffect(() => {
-        loadMaxPages();
-        loadEvent();
-        loadPagedPresences();
-        loadAllPresences()
+        loadEvent(eventId);
+        loadPresences(eventId);
     }, [])
 
-    function loadPagedPresences(pageN, eventId) {
-        // fetch(<>'localhost:8081/api/v1/presenca/evento/{eventId}?page={pageN}&size=6'</>)
-        //     .then(response => response.json())
-        //     .then(data => setPagedPresences(data))
-        //     .catch(error => console.error('Erro ao carregar eventos ativos:', error));\
-        const data = [{ 
-            'nome': 'Coisa boa da silva',
-            'data': '23/04/2025',
-            'id': '98369420',
-            'camisa': false,
-        }];
-
-        setPagedPresences(data)
-    }
-
-    function loadAllPresences(eventId) {
-        // fetch(<>'localhost:8081/api/v1/presenca/evento/{eventId}'</>)
-        //     .then(response => response.json())
-        //     .then(data => setPagedPresences(data))
-        //     .catch(error => console.error('Erro ao carregar eventos ativos:', error));\
-        const data = [{ 
-            'nome': 'Coisa boa da silva',
-            'data': '23/04/2025',
-            'id': '98369420',
-        }];
-
-        setAllPresences(data)
-    }
+    const loadPresences = async (eventId) => {
+        const elementPerPage = 10
+    
+        const urlAll = `http://localhost:8081/api/v1/presencas/evento/${eventId}`;
+    
+        queryParams.append('page', currentPage);
+        queryParams.append('size', elementPerPage);
+        
+        const url = `http://localhost:8081/api/v1/presencas/evento/${eventId}?${queryParams.toString()}`;
+        
+        try {
+          const response = await fetch(url, { method: 'GET', mode: 'cors' });
+          if (!response.ok) {
+            throw new Error(`Failed to load data: ${response.statusText}`);
+          }
+          
+          const responseAll = await fetch(urlAll, { method: 'GET', mode: 'cors' });
+          if (!responseAll.ok) {
+            throw new Error(`Failed to load data: ${response.statusText}`);
+          }
+          
+          const data = await response.json();
+          const dataAll = await responseAll.json();
+    
+          setPresences(dataAll.content || [])
+          setPagedPresences(data.content || []);
+          setMaxPages(data.totalPages)
+    
+        } catch (error) {
+          console.error('Error loading associates:', error);
+        }
+    
+    }; 
 
     function loadEvent(eventId) {
         // fetch(<>localhost:8081/api/v1/eventos/{event.id}</>)

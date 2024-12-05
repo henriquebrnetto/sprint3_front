@@ -104,7 +104,10 @@ export function Associado() {
                 </div>
                 <div className='associadoTopSection'>
                     <div className='associadoInfo'>
-
+                        <div className='associadoInfoName'>
+                            <h3 id='associadoInfoNameTitle'>Nome: </h3>
+                            <p id='associadoInfoNameTitle'>Nome: </p>
+                        </div>
                     </div>
                     <div className='associadoInfoButton'>
 
