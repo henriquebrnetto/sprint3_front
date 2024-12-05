@@ -1,12 +1,10 @@
-eventocadastroedicao: botao de mandar formulario
-marcarpresenca: fazer
+associados: css e botao de criar
+associadocadastro: post e css
+eventos: barra de pesquisa e css e botao de criar
+eventocadastro: post e css
+evento: load presencas, load evento, pesquisa, css
+marcarpresenca: css
 
-Login: fazer -> FECHEI O CAIXA :P (ASS: TB)
-
-usuario: terminar html e fazer css
-
-eventos: criar evento
-associados: criar associado
-
-evento: sem css
-associadocadastroedicao: sem css
+LINKAR TD
+AUTENTICACAO COM LOCAL STORAGE
+NIVEIS DE ACESSO E BLOOQUEIO

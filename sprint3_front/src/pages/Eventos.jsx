@@ -17,44 +17,46 @@ export function Eventos() {
   const [filters, setFilters] = useState({ startDate: '', endDate: '', status: 'Todos' });
   const [isDateDialogOpen, setDateDialogOpen] = useState(false);
 
+  const [nameFiltering, setNameFiltering] = useState('')
+
   const [currentPage, setCurrentPage] = useState(0);
   const [maxPages, setMaxPages] = useState(1);
 
   const orderFields = [ { name : 'nome', label: 'Nome'}, { name: 'data', label: 'Data' } ];
 
   useEffect(() => {
-    // Trigger the API request whenever filters, orderBy, or currentPage changes
     loadEvents();
   }, [filters, orderBy, currentPage]);
 
   const applyDateFilter = (newFilters) => {
     setFilters(newFilters);
-    setCurrentPage(0); // Reset to the first page
+    setCurrentPage(0);
   };
  
-
   const loadEvents = async () => {
-    const elementPerPage = 10;
+    const elementPerPage = 7;
     const queryParams = new URLSearchParams();
+
+    queryParams.append('nome', nameFiltering)
   
-    // Conditionally add date filters if they are not empty
     if (filters.startDate) {
-      queryParams.append('dataInicio', filters.startDate);  // Already in 'yyyy-MM-dd' format
+      queryParams.append('dataInicio', filters.startDate);
     }
     if (filters.endDate) {
-      queryParams.append('dataFim', filters.endDate);  // Already in 'yyyy-MM-dd' format
+      queryParams.append('dataFim', filters.endDate);
     }
-  
-    // Map status: Only add 'status' if it's 'Ativos' or 'Inativos'
+
     if (filters.status === 'Ativos') {
       queryParams.append('status', true);
     } else if (filters.status === 'Inativos') {
       queryParams.append('status', false);
     }
-    // 'Todos' status is ignored (default to no filter)
   
     queryParams.append('sortBy', orderBy.field || 'nome');
     queryParams.append('sortDirection', orderBy.direction || 'asc');
+
+    const urlAll = `http://localhost:8081/api/v1/eventos?${queryParams.toString()}`;
+
     queryParams.append('page', currentPage);
     queryParams.append('size', elementPerPage);
   
@@ -66,14 +68,40 @@ export function Eventos() {
       if (!response.ok) {
         throw new Error(`Failed to load data: ${response.statusText}`);
       }
-  
+      
+      const responseAll = await fetch(urlAll, { method: 'GET', mode: 'cors' });
+      if (!responseAll.ok) {
+        throw new Error(`Failed to load data: ${response.statusText}`);
+      }
+      
       const data = await response.json();
+      const dataAll = await responseAll.json();
+
+      setEvents(dataAll.content || [])
       setPagedEvents(data.content || []);
-      setMaxPages(data.totalPages);
+      setMaxPages(data.totalPages)
+
     } catch (error) {
-      console.error('Error loading events:', error);
+      console.error('Error loading associates:', error);
     }
-  };  
+  };
+
+  const handleSearch = (options, { inputValue }) => {
+    var nameFilter = options.filter(
+      (option) =>
+          option.nome.toLowerCase().includes(inputValue.toLowerCase())
+      );
+  
+      if (nameFilter.length > 0){
+          setNameFiltering(inputValue)
+      } else {
+          setNameFiltering(null)
+      }
+
+    return nameFilter
+  }
+
+
   
 return (
   <>
@@ -90,24 +118,55 @@ return (
         </button>
 
         <Autocomplete
-            className='searchBar'
-            options={pagedEvents}
-            freeSolo
-            inputValue={searchTerm}
-            onInputChange={(event, newInputValue) => setSearchTerm(newInputValue)}
-            getOptionLabel={(option) => option.nome || ''}
-            renderInput={(params) => (
-              <TextField
-                  {...params}
-                  variant="outlined"
-                  label={
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <FaSearch /> Buscar evento
-                  </span>
-                  }
-              />
-            )}
-        />
+              className='AssociadossearchBar'
+              options={events}
+              value={value}
+              startdecorator={<FaSearch></FaSearch>}
+              freeSolo
+              getOptionLabel={(option) => option.nome || ''}
+              filterOptions={handleSearch}
+              onChange={loadEvents}
+              renderInput={(params) => (
+                  <TextField {...params} variant="outlined"
+
+                      label={
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <FaSearch /> Buscar evento
+                          </span>
+                      }
+
+                      // Estilizando a barra de busca pq nao tem como fzr isso no arquivo de css
+      
+                      sx={{
+                          '& .MuiOutlinedInput-root': {
+                              borderWidth: '2px',
+                              borderColor: 'black',
+                              '& fieldset': {
+                                  borderWidth: '2px',
+                                  borderColor: 'rgba(0,0,0,.4)',
+                                  borderRadius: '7px'
+                              },
+                              '&:hover fieldset': {
+                                  borderColor: 'rgba(0,0,0,.6)',
+                              },
+                              '&.Mui-focused fieldset': {
+                                  borderColor: 'rgba(0,0,0,.6)',
+                              },
+                          },
+                          '& .MuiInputLabel-root': {
+                              color: 'rgba(0,0,0,.7)',
+                              fontSize: '16px',
+                              fontWeight: '500'
+                          },
+                          '& .MuiInputLabel-root.Mui-focused': {
+                              color: 'rgba(0,0,0,.7)',
+                          },
+                      }}
+
+                      // -----
+                  />
+              )}
+          />
           <button className='orderby' onClick={() => setOrderDialogOpen(true)}>
               <FaSortAmountDown />
           </button>
