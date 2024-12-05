@@ -1,129 +1,114 @@
 import { useEffect, useState } from 'react';
-
-import './style/Evento.css';
+import { useParams } from 'react-router-dom';
+import './style/Associado.css';
 import { IoArrowBack } from 'react-icons/io5';
-import { FaFilter, FaSortAmountDown, FaSearch, FaTrash, FaPencilAlt, FaCalendar, FaTshirt } from 'react-icons/fa';
-import { LuShirt } from "react-icons/lu";
-import { GrClose } from "react-icons/gr";
-import { Autocomplete, Pagination, TextField } from "@mui/material";
-
-import {useParams} from 'react-router-dom';
-
+import Calendar from 'react-calendar';
 
 export function Associado() {
-    
-    const {associateRegistration} = useParams();
-
+    const { associateRegistration } = useParams();
     const [associate, setAssociate] = useState([]);
-    const [pagedAssociateEvents, setPagedAssociateEvents] = useState([]);
-    const [associateEvents, setAssociateEvents] = useState([]);
-
-    const [maxPages, setMaxPages] = useState(1);
-    const [pageN, setPageN] = useState(0);
+    const [calendarEvents, setCalendarEvents] = useState([]);
+    const [presenceData, setPresenceData] = useState([]); // Initialize as empty array
 
     useEffect(() => {
-        loadPagedAssociateEvents();
-        loadMaxPages();
-        loadAssociateEvents();
         loadAssociate();
-    }, [])
+    }, []);
 
-    // funcoes para definir constantes acima
-    
-    function loadAssociateEvents(associateRegistration) {
-        // fetch(<>localhost:8081/api/v1/eventos/{event.id}</>)
-        //     .then(response => response.json())
-        //     .then(data => setEvents(data))
-        //     .catch(error => console.error('Erro ao carregar eventos:', error));
-        const data = [{
-            'nome': 'Coisa boa da silva',
-            'data': '23/04/2025',
-            'matricula': '98369420',
-        }];
+    const loadAssociate = async () => {
+        try {
+            const response = await fetch(`http://localhost:8081/api/v1/associados/${associateRegistration}`);
+            if (!response.ok) {
+                throw new Error(`Failed to load associate data: ${response.statusText}`);
+            }
+            const data = await response.json();
+            setAssociate(data); // Assume data is a single object
+            loadPresenceData(data.matricula); // Fetch presence data using the user's matricula
+        } catch (error) {
+            console.error('Error loading associate data:', error);
+        }
+    };
 
-        setAssociateEvents(data)
-    }
-    
-    function loadPagedAssociateEvents(pageN, associateRegistration) {
-        // fetch(<>'localhost:8081/api/v1/eventos/{event.id}?page={pageN}&size=6'</>)
-        //     .then(response => response.json())
-        //     .then(data => setPagedPresences(data))
-        //     .catch(error => console.error('Erro ao carregar eventos ativos:', error));\
-        const data = [{ 
-            'nome': 'Coisa boa da silva',
-            'data': '23/04/2025',
-            'id': '98369420',
-            'camisa': false,
-        }];
+    const loadPresenceData = async (matricula) => {
+        try {
+            const response = await fetch(`http://localhost:8081/api/v1/presencas/associado/${matricula}`);
+            if (!response.ok) {
+                throw new Error(`Failed to load presence data: ${response.statusText}`);
+            }
+            const data = await response.json();
+            setPresenceData(Array.isArray(data) ? data : []); // Ensure data is an array
+            setCalendarEvents(Array.isArray(data) ? data : []); // Set events for the calendar
+        } catch (error) {
+            console.error('Error loading presence data:', error);
+            setPresenceData([]); // Fallback to an empty array on error
+        }
+    };
 
-        setPagedAssociateEvents(data)
-    }
-
-    function loadAssociate(associateRegistration) {
-        // fetch(<>'localhost:8081/api/v1/presenca/evento/{event.id}'</>)
-        //     .then(response => response.json())
-        //     .then(data => setPagedPresences(data))
-        //     .catch(error => console.error('Erro ao carregar eventos ativos:', error));\
-        const data = [{ 
-            'nome': 'Coisa boa da silva',
-            'data': '23/04/2025',
-            'id': '98369420',
-        }];
-
-        setAssociate(data)
-    }
-
-    // -------
-
-    function loadMaxPages() {
-        setMaxPages(1)
-    }
-
-    const [selectedValue, setSelectedValue] = useState(null);
-
-    // lidar com buscas e mudanca de paginacao
-
-    const handleSearch = (options, { inputValue }) => {
-        return options.filter(
-        (option) =>
-            option.associadoNome.toLowerCase().includes(inputValue.toLowerCase())
+    const tileClassName = ({ date }) => {
+        const event = calendarEvents.find((event) =>
+            new Date(event.date).toDateString() === date.toDateString()
         );
+        if (!event) return null;
+        if (event.status === 'missed') return 'tile-red';
+        if (event.status === 'present') return 'tile-green';
+        if (event.status === 'future') return 'tile-blue';
     };
-
-    const handlePageChange = (event, value) => {
-        setPageN(value - 1);
-    };
-
-    // -------
 
     return (
-        <>
-            <div className='associadoMainGrid'>
-                <div className='associadoPreviousPage'>
-                    <button  id='associadoPreviousPageButton'><IoArrowBack></IoArrowBack></button>
+        <div className='associadoMainGrid'>
+            <div className='associadoPreviousPage'>
+                <button id='associadoPreviousPageButton'><IoArrowBack /></button>
+            </div>
+            <div className='associadoTopSection'>
+                <div className='associadoInfo'>
+                    {associate ? (
+                        <>
+                            <h2>{associate.nome}</h2>
+                            <p>Matrícula: {associate.matricula}</p>
+                            <p>Pontuação: {associate.pontos}</p>
+                        </>
+                    ) : (
+                        <p>Carregando dados...</p>
+                    )}
                 </div>
-                <div className='associadoTopSection'>
-                    <div className='associadoInfo'>
-
-                    </div>
-                    <div className='associadoInfoButton'>
-
-                    </div>
-                    <div className='associadoImage'>
-
-                    </div>
+                <div className='associadoImage'>
+                    <img src='/images/defaultProfile.png' alt='Associado' className='profileImage' />
                 </div>
-                <div className='associadoBottomSection'>
+            </div>
+            <div className='associadoBottomSection'>
+                <div className='calendar-events-container'>
                     <div className='associadoEvents'>
-                        <div className='associadoEventsSearchBar'>
-
-                        </div>
+                        <h3>Eventos:</h3>
+                        {presenceData.length > 0 ? (
+                            presenceData.map((event, index) => (
+                                <button key={index}>
+                                    <span>{event.name}</span>
+                                    <span>{event.date}</span>
+                                    <span>{event.status}</span>
+                                </button>
+                            ))
+                        ) : (
+                            <p>Nenhum evento encontrado.</p>
+                        )}
                     </div>
-                    <div className='associadoCalendar'>
-
+                    <div className='calendar'>
+                        <Calendar tileClassName={tileClassName} />
+                        <div className='calendar-legend'>
+                            <span>
+                                <div style={{ backgroundColor: '#ffcccc' }}></div>
+                                Não Presente
+                            </span>
+                            <span>
+                                <div style={{ backgroundColor: '#ccffcc' }}></div>
+                                Presente
+                            </span>
+                            <span>
+                                <div style={{ backgroundColor: '#cce5ff' }}></div>
+                                Próximos Eventos
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </>
-    );  
+        </div>
+    );
 }

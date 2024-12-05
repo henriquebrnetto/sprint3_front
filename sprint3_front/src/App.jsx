@@ -24,7 +24,7 @@ function App() {
 
   return (
     <>
-      <AppBar position="fixed" sx={{ backgroundColor: "#A71220" }} >
+      <AppBar position="fixed" sx={{ backgroundColor: "#A71220", marginBottom: "50px" }} >
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <img className="logoMST" src={mst} />
