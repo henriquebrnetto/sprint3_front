@@ -68,6 +68,7 @@ function App() {
 
         <Route path='/associados' element={<Associados/>}/>
         <Route path='/associado/:associateRegistration' element={<Associado/>}/>
+        <Route path='/associadoCadastroEdicao' element={<AssociadoCadastroEdicao/>}/>
         <Route path='/associadoCadastroEdicao/:associateRegistration' element={<AssociadoCadastroEdicao/>}/>
 
         <Route path='/marcarpresenca/:eventId' element={<MarcarPresenca/>}/>
