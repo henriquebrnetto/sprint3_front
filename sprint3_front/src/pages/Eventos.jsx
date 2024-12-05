@@ -20,7 +20,7 @@ export function Eventos() {
   const [currentPage, setCurrentPage] = useState(0);
   const [maxPages, setMaxPages] = useState(1);
 
-  const orderFields = [ { name: 'data', label: 'Data' } ];
+  const orderFields = [ { name : 'nome', label: 'Nome'}, { name: 'data', label: 'Data' } ];
 
   useEffect(() => {
     // Trigger the API request whenever filters, orderBy, or currentPage changes
