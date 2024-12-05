@@ -5,6 +5,7 @@ import { IoArrowBack } from 'react-icons/io5';
 import { FaFilter, FaSortAmountDown, FaSearch, FaTrash, FaPencilAlt, FaCalendar  } from 'react-icons/fa';
 import { Autocomplete, Pagination, TextField } from "@mui/material";
 import OrderDialog from './OrderDialog';
+import DateFilterDialog from './DateFilterDialog';
 
 export function Eventos() {
 
@@ -13,63 +14,67 @@ export function Eventos() {
   const [filters, setFilters] = useState({});
   const [orderBy, setOrderBy] = useState({ field: 'nome', direction: 'asc' });
   const [searchTerm, setSearchTerm] = useState('');
-  const [isCalendarDialogOpen, setCalendarDialogOpen] = useState(false);
   const [isOrderDialogOpen, setOrderDialogOpen] = useState(false);
+  const [isDateDialogOpen, setDateDialogOpen] = useState(false);
+  const [dateFilters, setDateFilters] = useState({ startDate: '', endDate: '', status: 'Todos' });
+
   const [currentPage, setCurrentPage] = useState(0);
   const [maxPages, setMaxPages] = useState(1);
 
-  const orderFields = [ { name: 'nome', label: 'Nome' }, { name: 'idade', label: 'Idade' }, { name: 'filhos', label: 'Filhos' }, { name: 'pontos', label: 'Pontos' } ];
+  const orderFields = [ { name: 'data', label: 'Data' } ];
 
   useEffect(() => {
     // Trigger the API request whenever filters, orderBy, or currentPage changes
     loadEvents();
   }, [filters, orderBy, currentPage]);
 
+  const applyDateFilter = (dates) => {
+    setDateFilters(dates);
+    setCurrentPage(0); // Reset to the first page when applying new filters
+  };
+ 
+
   const loadEvents = async () => {
-    // Construct query parameters
-    const elementPerPage = 10
-
+    const elementPerPage = 10;
     const queryParams = new URLSearchParams();
-
-  // Add filter values to the query only if they are not null or equal to default slider values
-    if (filters.status !== undefined && filters.status !== 'Todos') {
+  
+    // Existing filters
+    if (filters.status && filters.status !== 'Todos') {
       queryParams.append('status', filters.status);
     }
-
+  
+    // Add date filters if they are not empty
+    if (dateFilters.startDate) {
+      queryParams.append('startDate', dateFilters.startDate);
+    }
+    if (dateFilters.endDate) {
+      queryParams.append('endDate', dateFilters.endDate);
+    }
+  
+    // Add status filter if it’s not 'Todos'
+    if (dateFilters.status && dateFilters.status !== 'Todos') {
+      queryParams.append('status', dateFilters.status);
+    }
+  
     queryParams.append('sortBy', orderBy.field || 'nome');
     queryParams.append('sortDirection', orderBy.direction || 'asc');
-
-    const urlAll = `http://localhost:8081/api/v1/eventos?${queryParams.toString()}`;
-
-    // Add pagination and sorting values to the query
     queryParams.append('page', currentPage);
-    queryParams.append('size', elementPerPage); // Assuming a page size of 10
-    
+    queryParams.append('size', elementPerPage);
+  
     const url = `http://localhost:8081/api/v1/eventos?${queryParams.toString()}`;
-    // Build the full URL
-    
+  
     try {
-      // Fetch data from the server
       const response = await fetch(url, { method: 'GET', mode: 'cors' });
       if (!response.ok) {
         throw new Error(`Failed to load data: ${response.statusText}`);
       }
-      
-      const responseAll = await fetch(urlAll, { method: 'GET', mode: 'cors' });
-      if (!responseAll.ok) {
-        throw new Error(`Failed to load data: ${response.statusText}`);
-      }
-      
+  
       const data = await response.json();
-      
-      // Update states
       setPagedEvents(data.content || []);
-      setMaxPages(data.totalPages)
-
+      setMaxPages(data.totalPages);
     } catch (error) {
       console.error('Error loading events:', error);
     }
-
   };
 
   const handleSearch = (term) => {
@@ -92,7 +97,10 @@ return (
       </div>
 
       <div className='topSection'>
-        <button className='eventosCalendar' onClick={() => setCalendarDialogOpen(true)}><FaCalendar></FaCalendar></button>
+
+        <button className='eventosCalendar' onClick={() => setDateDialogOpen(true)}>
+          <FaCalendar />
+        </button>
 
         <Autocomplete
             className='searchBar'
@@ -135,6 +143,12 @@ return (
             <></>
         )}
     </div>
+
+      <DateFilterDialog
+        open={isDateDialogOpen}
+        onClose={() => setDateDialogOpen(false)}
+        onApply={applyDateFilter}
+      />
 
       <OrderDialog
           open={isOrderDialogOpen}
