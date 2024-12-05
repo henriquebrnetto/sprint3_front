@@ -122,9 +122,11 @@ export function Associado() {
                 <div className='dialogOverlay'>
                     <div className='dialogBox'>
                         <h2>Mais Informações</h2>
-                        <p>Endereço: Rua Fictícia, 123</p>
-                        <p>Telefone: (11) 1234-5678</p>
-                        <p>Email: usuario@exemplo.com</p>
+                        <p>Data de Nascimento: {associate.dataNascimento || 'Carregando...'}</p>
+                        <p>RG: {associate.rg || 'Carregando...'}</p>
+                        <p>Sexo: {associate.sexo || 'Não informado'}</p>
+                        <p>Email: {associate.email || 'Não informado'}</p>
+                        <p>Celular: {associate.celular || 'Não informado'}</p>
                         <button className='closeButton' onClick={toggleDialog}>
                             Fechar
                         </button>

@@ -65,6 +65,10 @@
 
 .calendar {
     flex: 1;
+    border: 1px solid black; /* Added black border */
+    padding: 1rem;
+    border-radius: 8px;
+    background: white;
 }
 
 .calendar-legend {
@@ -114,4 +118,52 @@
 
 .moreInfoButton:hover {
     background-color: #0056b3;
+}
+
+/* Dialog styles */
+.dialogOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.dialogBox {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+}
+
+.dialogBox h2 {
+    margin-bottom: 1rem;
+}
+
+.dialogBox p {
+    margin: 0.5rem 0;
+}
+
+.closeButton {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.closeButton:hover {
+    background-color: #c82333;
 }
