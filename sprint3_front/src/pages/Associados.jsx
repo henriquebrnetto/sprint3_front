@@ -12,6 +12,9 @@ export function Associados() {
     const [pageN, setPageN] = useState(0);
     const [pagedAssociates, setPagedAssociates] = useState([]);
 
+    const [nameFiltering, setNameFiltering] = useState('')
+    const [registrationFiltering, setRegistrationFiltering] = useState('')
+
     useEffect(() => {
         loadAssociates();
         loadMaxPages();

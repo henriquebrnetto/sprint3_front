@@ -25,7 +25,7 @@ export function EventoCadastroEdicao() {
             'pontosComCamisa': null,
             'pontosSemCamisa': null,
             'pontosColaborador': null,
-            'reeuniaoMensal': null,
+            'reuniaoMensal': null,
             'status': false,
             'contribuicaoTotal': 0
         }
@@ -82,11 +82,21 @@ export function EventoCadastroEdicao() {
     };
 
     const flipStatus = () => {
-        updateField('casado', !vals.casado)
+        updateField('status', !vals.status)
+    };
+
+    const flipMensal = () => {
+        updateField('mensal', !vals.mensal)
     };
 
     const checkStatus = (sx) => {
         if (vals.status){
+            return 'Active'
+        }
+        return ''
+    }
+    const checkMensal = (sx) => {
+        if (vals.reuniaoMensal){
             return 'Active'
         }
         return ''
@@ -96,11 +106,6 @@ export function EventoCadastroEdicao() {
         <>
             <div className='associadocadastroedicaoMainGrid'>
                 <h1>A</h1>
-                <>{vals.pcd ?(
-                    <h1>A</h1>
-                ):(
-                    <></>
-                )}</>
                 <div className='associadocadastroedicaoForm'>
 
                     <div className="associadocadastroedicaoNome">
@@ -110,126 +115,61 @@ export function EventoCadastroEdicao() {
                         </div>
                     </div>
 
-                    <div className="associadocadastroedicaoDataNascimento">
+                    <div className="associadocadastroedicaoData">
                         <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Data de Nascimento</label>
-                            <input name="dataNascimento" type="date" className="form-control input-lg" value={vals.dataNascimento || getDate() } onChange={(e) => updateField(e.target.name, e.target.value)}/>
+                            <label><span className="required">*</span>Data</label>
+                            <input name="data" type="date" className="form-control input-lg" value={vals.data || getDate() } onChange={(e) => updateField(e.target.name, e.target.value)}/>
                         </div>
                     </div>
 
-                    <div className="associadocadastroedicaoIdade">
+                    <div className="associadocadastroedicaoLocal">
                         <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Idade</label>
-                            <input name="idade" type="number" className="form-control input-lg" value={vals.idade || null } onChange={(e) => updateField(e.target.name, e.target.value)}/>
+                            <label><span className="required">*</span>Local</label>
+                            <input name="local" type="text" className="form-control input-lg" value={vals.local || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
                         </div>
                     </div>
 
-                    <div className="associadocadastroedicaoRg">
+                    <div className="associadocadastroedicaoDescricao">
                         <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>RG</label>
-                            <input name="rg" type="text" className="form-control input-lg" value={vals.rg || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
+                            <label><span className="required">*</span>Descricao</label>
+                            <input name="descricao" type="text" className="form-control input-lg" value={vals.descricao || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
                         </div>
                     </div>
 
-                    <div className="associadocadastroedicaoCpf">
+                    <div className="associadocadastroedicaoStatus">
+                        <h3>Status:</h3>
+                        <button id={'associadocadastroedicaoStatus'+checkStatus()} onClick={flipStatus}></button>
+                    </div>
+
+                    <div className="associadocadastroedicaoReuniaoMensal">
+                        <h3>Reuniao Mensal:</h3>
+                        <button id={'associadocadastroedicaoReuniaoMensal'+checkMensal()} onClick={flipMensal}></button>
+                    </div>
+
+                    <div className="associadocadastroedicaoPontosComCamisa">
                         <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>CPF</label>
-                            <input name="cpf" type="text" className="form-control input-lg" value={vals.cpf || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
+                            <label><span className="required">*</span>Pontos Com Camisa</label>
+                            <input name="pontosComCamisa" type="number" className="form-control input-lg" value={vals.pontosComCamisa || null } onChange={(e) => updateField(e.target.name, e.target.value)}/>
                         </div>
                     </div>
 
-                    <div className="associadocadastroedicaoCasado">
-                        <h3>Casado:</h3>
-                        <button id={'associadocadastroedicaoCasado'+checkCasadoSexoPcd('C')} onClick={flipCasado}></button>
-                    </div>
-
-                    <div className="associadocadastroedicaoMatricula">
+                    <div className="associadocadastroedicaoPontosSemCamisa">
                         <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Matrícula</label>
-                            <input name="matricula" type="text" className="form-control input-lg" value={vals.matricula || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
+                            <label><span className="required">*</span>Pontos Sem Camisa</label>
+                            <input name="pontosSemCamisa" type="number" className="form-control input-lg" value={vals.pontosSemCamisa || null } onChange={(e) => updateField(e.target.name, e.target.value)}/>
                         </div>
                     </div>
 
-                    <div className="associadocadastroedicaoSexo">
-                        <h3>Sexo:</h3>
-                        <div className='associadocadastroedicaoSexoButtons'>
-                            <button id={'associadocadastroedicaoSexoH'+checkCasadoSexoPcd('H')} onClick={() => setSexo('H')}>H</button>
-                            <button id={'associadocadastroedicaoSexoM'+checkCasadoSexoPcd('M')} onClick={() => setSexo('M')}>M</button>
-                            <button id={'associadocadastroedicaoSexoO'+checkCasadoSexoPcd('O')} onClick={() => setSexo('O')}>O</button>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoPcd">
-                        <h3>PCD:</h3>
-                        <button id={'associadocadastroedicaoPcd'+checkCasadoSexoPcd('P')} onClick={flipPcd}></button>
-                    </div>
-
-                    <div className="associadocadastroedicaoEmail">
+                    <div className="associadocadastroedicaoPontosColaborador">
                         <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>E-mail</label>
-                            <input name="email" type="text" className="form-control input-lg" value={vals.email || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoCelular">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Celular</label>
-                            <input name="celular" type="text" className="form-control input-lg" value={vals.celular || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoEndereco">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Endereco</label>
-                            <input name="endereco" type="text" className="form-control input-lg" value={vals.endereco || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoBairro">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Bairro</label>
-                            <input name="bairro" type="text" className="form-control input-lg" value={vals.bairro || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoComplemento">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Complemento</label>
-                            <input name="complemento" type="text" className="form-control input-lg" value={vals.complemento || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoCep">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>CEP</label>
-                            <input name="cep" type="text" className="form-control input-lg" value={vals.cep || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoFilhos">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Filhos</label>
-                            <input name="filhos" type="number" className="form-control input-lg" value={vals.filhos || null } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoPontos">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Pontos</label>
-                            <input name="pontos" type="number" className="form-control input-lg" value={vals.pontos || null } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoFaltas">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Faltas</label>
-                            <input name="faltas" type="number" className="form-control input-lg" value={vals.faltas || 0 } onChange={(e) => updateField(e.target.name, e.target.value)}/>
+                            <label><span className="required">*</span>Pontos Colaborador</label>
+                            <input name="pontosColaborador" type="number" className="form-control input-lg" value={vals.pontosColaborador || null } onChange={(e) => updateField(e.target.name, e.target.value)}/>
                         </div>
                     </div>
 
                     <div className="associadocadastroedicaoObservacao">
                         <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Observação</label>
+                            <label><span className="required"></span>Observação</label>
                             <textarea name='observacao' rows='4' cols='50' value={vals.observacao || '' } onChange={(e) => updateField(e.target.name, e.target.value)}></textarea>
                         </div>
                     </div>
@@ -237,5 +177,5 @@ export function EventoCadastroEdicao() {
                 </div>
             </div>
         </>
-    );  
+    );
 }
