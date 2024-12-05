@@ -1,0 +1,27 @@
+#marcarpresencaColaboratorButton[name="falta"] {
+    background: red;
+  }
+
+.marcarpresencaMainGrid {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    margin-top: 75px;
+}
+
+#marcarpresencaPreviousPageButton {
+    position: absolute;
+    left:0;
+    top:0;
+}
+
+
+.marcarpresencaEventInfo {
+    display: flex;
+    align-items: center;
+}
+
+.marcarpresencaEventInfoTitle {
+    display: flex;
+    margin-right: 3vw;
+}

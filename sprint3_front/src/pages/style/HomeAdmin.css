@@ -8,6 +8,10 @@
     margin-top: 45px;
 }
 
+.homeAdminevent {
+    margin-top: 10px;
+}
+
 .homeAdminbuttons {
     display: flex;
     justify-content: space-evenly; 

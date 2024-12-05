@@ -6,6 +6,9 @@ import { FaFilter, FaSortAmountDown, FaSearch, FaTrash, FaPencilAlt, FaCalendar 
 import { Autocomplete, Pagination, TextField } from "@mui/material";
 import OrderDialog from './OrderDialog';
 import DateFilterDialog from './DateFilterDialog';
+import { CgAdd } from "react-icons/cg";
+
+import { Link } from 'react-router';
 
 export function Eventos() {
 
@@ -26,7 +29,7 @@ export function Eventos() {
 
   useEffect(() => {
     loadEvents();
-  }, [filters, orderBy, currentPage]);
+  }, [filters, orderBy, currentPage, nameFiltering]);
 
   const applyDateFilter = (newFilters) => {
     setFilters(newFilters);
@@ -87,6 +90,8 @@ export function Eventos() {
   };
 
   const handleSearch = (options, { inputValue }) => {
+    console.log(nameFiltering)
+
     var nameFilter = options.filter(
       (option) =>
           option.nome.toLowerCase().includes(inputValue.toLowerCase())
@@ -105,27 +110,28 @@ export function Eventos() {
   
 return (
   <>
-    <div className='mainGrid'>
+    <div className='eventosMainGrid'>
 
-      <div className='previousPage'>
-          <button id='previousPageButton'><IoArrowBack /></button>
+      <Link to='/associadocadastroedicao/bla'> <button id='eventosNewEvent'><CgAdd></CgAdd></button></Link>
+
+      <div className='eventosPreviousPage'>
+          <Link to='/homeadmin'><button id='eventosPreviousPageButton'><IoArrowBack /></button></Link>
       </div>
 
-      <div className='topSection'>
+      <div className='eventosTopSection'>
 
         <button className='eventosCalendar' onClick={() => setDateDialogOpen(true)}>
           <FaCalendar />
         </button>
-
         <Autocomplete
-              className='AssociadossearchBar'
+              className='eventosAssociadosSearchBar'
               options={events}
-              value={value}
               startdecorator={<FaSearch></FaSearch>}
               freeSolo
               getOptionLabel={(option) => option.nome || ''}
               filterOptions={handleSearch}
               onChange={loadEvents}
+              autoHighlight
               renderInput={(params) => (
                   <TextField {...params} variant="outlined"
 
@@ -175,11 +181,11 @@ return (
         <div className='eventosEventos'>
             {pagedEvents.map((event, index) => (
                 <div className='eventosEvent' key={index}>
-                    <button className='eventosEventBox'>
+                    <Link to={'/evento/' + event.id}><button className='eventosEventBox'>
                         <h3 id='eventName'>{event.nome}</h3>
-                    </button>
-                    <button className='eventosEditButton'><FaPencilAlt></FaPencilAlt></button>
-                    <button className='eventosDeleteButton'><FaTrash></FaTrash></button>
+                    </button></Link>
+                    <Link to={'/eventocadastroedicao/'+event.id}><button className='eventosEditButton'><FaPencilAlt></FaPencilAlt></button></Link>
+                    <Link><button className='eventosDeleteButton'><FaTrash></FaTrash></button></Link>
                 </div>
             ))}
         </div>

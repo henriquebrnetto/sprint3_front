@@ -30,10 +30,12 @@ export function Evento() {
 
     const loadPresences = async (eventId) => {
         const elementPerPage = 10
+
+        const queryParams = new URLSearchParams();
     
         const urlAll = `http://localhost:8081/api/v1/presencas/evento/${eventId}`;
     
-        queryParams.append('page', currentPage);
+        queryParams.append('page', pageN);
         queryParams.append('size', elementPerPage);
         
         const url = `http://localhost:8081/api/v1/presencas/evento/${eventId}?${queryParams.toString()}`;
@@ -74,7 +76,7 @@ export function Evento() {
             
             const data = await response.json();
         
-            setEvent(data.content || {})
+            setEvent(data || {})
       
           } catch (error) {
             console.error('Error loading event:', error);
@@ -118,6 +120,13 @@ export function Evento() {
         }
         return pagedPresences
     }
+
+    const updateField = (field, value) => {
+        setEvent((prevVals) => ({
+          ...prevVals,
+          [field]: value,
+        }));
+    };
 
     const flipStatus = () => {
         updateField('status', !event.status)
