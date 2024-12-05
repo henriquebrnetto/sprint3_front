@@ -21,6 +21,8 @@ export function Associados() {
   const [currentPage, setCurrentPage] = useState(0);
   const [maxPages, setMaxPages] = useState(1);
 
+  const [value, setValue] = useState(null)
+
 
   const filterFields = [
     { name: 'idade', label: 'Idade', type: 'minmax', min: 0, max: 120 },
@@ -142,12 +144,6 @@ export function Associados() {
     return nameRegistrationFilter
   };
 
-  const handleSelect = (event, newValue) => {
-    setValue(newValue || '');
-    loadAssociates();
-  }
-
-
 
   return (
     <>
@@ -163,11 +159,12 @@ export function Associados() {
             <Autocomplete
               className='AssociadossearchBar'
               options={associates}
-              startDecorator={<FaSearch></FaSearch>}
+              value={value}
+              startdecorator={<FaSearch></FaSearch>}
               freeSolo
-              getOptionLabel={(option) => option.nome}
+              getOptionLabel={(option) => option.nome || ''}
               filterOptions={handleSearch}
-              onChange={handleSelect}
+              onChange={loadAssociates}
               renderInput={(params) => (
                   <TextField {...params} variant="outlined"
 
