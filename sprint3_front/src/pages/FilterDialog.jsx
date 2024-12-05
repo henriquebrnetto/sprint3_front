@@ -5,8 +5,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Slider from '@mui/material/Slider';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -46,7 +44,7 @@ const FilterDialog = ({ open, onClose, onApply, fieldDefinitions, initialFilters
     const resetFilters = fieldDefinitions.reduce((acc, field) => {
       if (field.type === 'checkbox') acc[field.name] = false;
       else if (field.type === 'minmax') acc[field.name] = [field.min || 0, field.max || 100];
-      else if (field.type === 'threeOptions') acc[field.name] = field.default || 'todos';
+      else if (field.type === 'threeOptions') acc[field.name] = field.default;
       else acc[field.name] = '';
       return acc;
     }, {});
@@ -110,9 +108,9 @@ const FilterDialog = ({ open, onClose, onApply, fieldDefinitions, initialFilters
         ))}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleReset}>Reset Filters</Button>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleApply}>Apply</Button>
+        <Button onClick={handleReset}>Remover Filtros</Button>
+        <Button onClick={onClose}>Cancelar</Button>
+        <Button onClick={handleApply}>Aplicar</Button>
       </DialogActions>
     </Dialog>
   );

@@ -18,6 +18,8 @@ export function Associados() {
   const [isOrderDialogOpen, setOrderDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
+  const [maxPages, setMaxPages] = useState(1);
+
   const filterFields = [
     { name: 'idade', label: 'Idade', type: 'minmax', min: 0, max: 120 },
     { name: 'casado', label: 'Estado Civil', type: 'threeOptions', default: 'Todos', options: [ { value: 'Todos', label: 'Todos' }, { value: true, label: 'Casado' }, { value: false, label: 'Solteiro' } ] },
@@ -25,70 +27,97 @@ export function Associados() {
     { name: 'pcd', label: 'PCD', type: 'threeOptions', default: 'Todos', options: [ { value: 'Todos', label: 'Todos' }, { value: true, label: 'Sim' }, { value: false, label: 'Não' } ] },
     { name: 'bairro', label: 'Bairro', type: 'text' },
     { name: 'filhos', label: 'Filhos', type: 'minmax', min: 0, max: 20 },
-    { name: 'status', label: 'Status', type: 'threeOptions', default: 'ativo', options: [ { value: 'ativo', label: 'Ativo' }, { value: 'bloqueado', label: 'Bloqueado' }, { value: 'Todos', label: 'Todos' } ] } ];  
+    { name: 'status', label: 'Status', type: 'threeOptions', default: 'Todos', options: [ { value: true, label: 'Ativo' }, { value: false, label: 'Bloqueado' }, { value: 'Todos', label: 'Todos' } ] } ];  
 
     const orderFields = [ { name: 'nome', label: 'Nome' }, { name: 'idade', label: 'Idade' }, { name: 'filhos', label: 'Filhos' }, { name: 'pontos', label: 'Pontos' } ];
-    
-  useEffect(() => {
-    loadAssociates();
-  }, []);
 
   useEffect(() => {
-    if (associates.length > 0) {
-      applyFiltersAndSorting();
-    }
-  }, [filters, orderBy, associates]);
-
-  useEffect(() => {
-    if (searchTerm) {
-      handleSearch(searchTerm);
-    } else if (associates.length > 0) {
-      applyFiltersAndSorting();
-    }
+    const debounce = setTimeout(() => {
+      if (searchTerm) {
+        handleSearch(searchTerm);
+      } else {
+        loadAssociates(); // Reset to filtered and sorted data
+      }
+    }, 300); // 300ms debounce
+  
+    return () => clearTimeout(debounce); // Cleanup debounce
   }, [searchTerm]);
+  
 
-  const loadAssociates = async (page = 0) => {
+  useEffect(() => {
+    // Trigger the API request whenever filters, orderBy, or currentPage changes
+    loadAssociates();
+  }, [filters, orderBy, currentPage]);
+  
+  const loadAssociates = async () => {
     // Construct query parameters
+    const elementPerPage = 10
+
     const queryParams = new URLSearchParams();
-  
-    // Add filter values to the query
-    queryParams.append('idadeMinima', filters.idade ? filters.idade[0] : null);
-    queryParams.append('idadeMaxima', filters.idade ? filters.idade[1] : null);
-    queryParams.append('casado', filters.casado !== 'Todos' ? filters.casado : null);
-    queryParams.append('sexo', filters.sexo !== 'Todos' ? filters.sexo : null);
-    queryParams.append('filhosMinimo', filters.filhos ? filters.filhos[0] : null);
-    queryParams.append('filhosMaximo', filters.filhos ? filters.filhos[1] : null);
-    queryParams.append('status', filters.status !== 'Todos' ? filters.status : null);
-  
-    // Add pagination and sorting values to the query
-    queryParams.append('page', page);
-    queryParams.append('size', 10); // Assuming a page size of 10
+
+    const idadeFilterField = filterFields.find((field) => field.name === 'idade');
+    const idadeMin = idadeFilterField?.min || 0; // Default to 0 if not found
+    const idadeMax = idadeFilterField?.max || 120; // Default to 120 if not found
+
+    const filhosFilterField = filterFields.find((field) => field.name === 'filhos');
+    const filhosMin = filhosFilterField?.min || 0; // Default to 0 if not found
+    const filhosMax = filhosFilterField?.max || 20; // Default to 20 if not found
+
+  // Add filter values to the query only if they are not null or equal to default slider values
+    if (filters.idade && filters.idade[0] !== idadeMin && filters.idade[1] !== idadeMax) {
+      queryParams.append('idadeMinima', filters.idade[0]);
+      queryParams.append('idadeMaxima', filters.idade[1]);
+    }
+    if (filters.casado !== undefined && filters.casado !== 'Todos') {
+      queryParams.append('casado', filters.casado);
+    }
+    if (filters.sexo !== undefined && filters.sexo !== 'Todos') {
+      queryParams.append('sexo', filters.sexo);
+    }
+    if (filters.filhos && filters.filhos[0] !== filhosMin && filters.filhos[1] !== filhosMax) {
+      queryParams.append('filhosMinimo', filters.filhos[0]);
+      queryParams.append('filhosMaximo', filters.filhos[1]);
+    }
+    if (filters.status !== undefined && filters.status !== 'Todos') {
+      queryParams.append('status', filters.status);
+    }
+
     queryParams.append('sortBy', orderBy.field || 'nome');
     queryParams.append('sortDirection', orderBy.direction || 'asc');
-  
+
+    const urlAll = `http://localhost:8081/api/v1/associados?${queryParams.toString()}`;
+
+    // Add pagination and sorting values to the query
+    queryParams.append('page', currentPage);
+    queryParams.append('size', elementPerPage); // Assuming a page size of 10
+    
+    const url = `http://localhost:8081/api/v1/associados?${queryParams.toString()}`;
     // Build the full URL
-    const url = `http://localhost:8081/associados?${queryParams.toString()}`;
-  
+    
     try {
       // Fetch data from the server
-      const response = await fetch(url);
+      const response = await fetch(url, { method: 'GET', mode: 'cors' });
       if (!response.ok) {
         throw new Error(`Failed to load data: ${response.statusText}`);
       }
+      
+      const responseAll = await fetch(urlAll, { method: 'GET', mode: 'cors' });
+      if (!responseAll.ok) {
+        throw new Error(`Failed to load data: ${response.statusText}`);
+      }
+      
       const data = await response.json();
-  
+      const dataAll = await responseAll.json();
+      
       // Update states
-      setAssociates(data.content || []); // Assuming the API returns data in a `content` field
       setPagedAssociates(data.content || []);
+      setMaxPages(data.totalPages)
+
     } catch (error) {
       console.error('Error loading associates:', error);
     }
-  };
-  
 
-  const applyFiltersAndSorting = () => {
-    loadAssociates(); // Reload data based on updated filters and sorting
-  };  
+  }; 
 
   const handleSearch = (term) => {
     const lowerCaseTerm = term.toLowerCase();
