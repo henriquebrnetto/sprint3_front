@@ -1,4 +1,4 @@
-eventocadastroedicao: fazer
+eventocadastroedicao: botao de mandar formulario
 marcarpresenca: fazer
 
 Login: fazer -> FECHEI O CAIXA :P (ASS: TB)

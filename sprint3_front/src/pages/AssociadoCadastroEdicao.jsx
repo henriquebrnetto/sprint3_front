@@ -45,14 +45,6 @@ export function AssociadoCadastroEdicao() {
         loadAssociate();
     }, [])
 
-    // if (associateRegistration == 'cadastro') {
-
-    // }
-    // else {
-
-    // }
-
-    // funcoes para definir constantes acima
 
     function loadAssociate(associateRegistration) {
         // fetch(<>'localhost:8081/api/v1/presenca/evento/{event.id}'</>)

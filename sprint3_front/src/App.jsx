@@ -10,6 +10,8 @@ import { Eventos } from './pages/Eventos'
 import { Evento } from './pages/Evento'
 import { Associado } from './pages/Associado'
 import { AssociadoCadastroEdicao } from './pages/AssociadoCadastroEdicao'
+import { EventoCadastroEdicao } from './pages/EventoCadastroEdicao'
+import { MarcarPresenca } from './pages/marcarpresenca.jsx'
 
 import { HashRouter, Link, Route, Routes } from 'react-router-dom'
 
@@ -61,10 +63,13 @@ function App() {
         
         <Route path='/eventos' element={<Eventos/>}/>
         <Route path='/evento/:eventId' element={<Evento/>}/>
+        <Route path='/eventoCadastroEdicao/:eventId' element={<EventoCadastroEdicao/>}/>
 
         <Route path='/associados' element={<Associados/>}/>
         <Route path='/associado/:associateRegistration' element={<Associado/>}/>
         <Route path='/associadoCadastroEdicao/:associateRegistration' element={<AssociadoCadastroEdicao/>}/>
+
+        <Route path='/marcarpresenca/:eventId' element={<MarcarPresenca/>}/>
       </Routes>  
     </>
   );

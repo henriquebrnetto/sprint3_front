@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './style/Associados.css';
 import { IoArrowBack } from 'react-icons/io5';
-import { FaFilter, FaSortAmountDown, FaSearch, FaTrash, FaPencilAlt } from 'react-icons/fa';
+import { FaFilter, FaSortAmountDown, FaTrash, FaPencilAlt, FaSearch } from 'react-icons/fa';
 import { Autocomplete, Pagination, TextField } from "@mui/material";
 import FilterDialog from './FilterDialog';
 import OrderDialog from './OrderDialog';
@@ -9,59 +9,51 @@ import OrderDialog from './OrderDialog';
 export function Associados() {
   const [associates, setAssociates] = useState([]);
   const [pagedAssociates, setPagedAssociates] = useState([]);
+
   const [filters, setFilters] = useState({});
   const [orderBy, setOrderBy] = useState({ field: 'nome', direction: 'asc' });
-  const [searchTerm, setSearchTerm] = useState('');
+
+  const [nameFiltering, setNameFiltering] = useState('')
+  const [registrationFiltering, setRegistrationFiltering] = useState('')
   const [isFilterDialogOpen, setFilterDialogOpen] = useState(false);
   const [isOrderDialogOpen, setOrderDialogOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0);
 
+  const [currentPage, setCurrentPage] = useState(0);
   const [maxPages, setMaxPages] = useState(1);
+
+  const [value, setValue] = useState(null)
+
 
   const filterFields = [
     { name: 'idade', label: 'Idade', type: 'minmax', min: 0, max: 120 },
     { name: 'casado', label: 'Estado Civil', type: 'threeOptions', default: 'Todos', options: [ { value: 'Todos', label: 'Todos' }, { value: true, label: 'Casado' }, { value: false, label: 'Solteiro' } ] },
     { name: 'sexo', label: 'Sexo', type: 'threeOptions', default: 'Todos', options: [ { value: 'Todos', label: 'Todos' }, { value: 'M', label: 'M' }, { value: 'F', label: 'F' }, { value: 'O', label: 'O' } ] },
     { name: 'pcd', label: 'PCD', type: 'threeOptions', default: 'Todos', options: [ { value: 'Todos', label: 'Todos' }, { value: true, label: 'Sim' }, { value: false, label: 'Não' } ] },
-    { name: 'bairro', label: 'Bairro', type: 'text' },
     { name: 'filhos', label: 'Filhos', type: 'minmax', min: 0, max: 20 },
-    { name: 'status', label: 'Status', type: 'threeOptions', default: 'Todos', options: [ { value: true, label: 'Ativo' }, { value: false, label: 'Bloqueado' }, { value: 'Todos', label: 'Todos' } ] } ];  
+    { name: 'status', label: 'Status', type: 'threeOptions', default: 'Todos', options: [ { value: true, label: 'Ativo' }, { value: false, label: 'Bloqueado' }, { value: 'Todos', label: 'Todos' } ] },
+    { name: 'tipoAcesso', label: 'Tipo de Acesso', type: 'threeOptions', default: 'Todos', options: [ { value: 'Todos', label: 'Todos' }, { value: 'admin', label: 'Administrador' }, { value: 'colaborador', label: 'Colaborador/Voluntário' },  { value: 'associado', label: 'Associado' }] } ];
 
   const orderFields = [ { name: 'nome', label: 'Nome' }, { name: 'idade', label: 'Idade' }, { name: 'filhos', label: 'Filhos' }, { name: 'pontos', label: 'Pontos' } ];
 
   useEffect(() => {
-    const debounce = setTimeout(() => {
-      if (searchTerm) {
-        handleSearch(searchTerm);
-      } else {
-        loadAssociates(); // Reset to filtered and sorted data
-      }
-    }, 300); // 300ms debounce
-  
-    return () => clearTimeout(debounce); // Cleanup debounce
-  }, [searchTerm]);
-  
-
-  useEffect(() => {
-    // Trigger the API request whenever filters, orderBy, or currentPage changes
     loadAssociates();
   }, [filters, orderBy, currentPage]);
   
   const loadAssociates = async () => {
-    // Construct query parameters
     const elementPerPage = 10
 
     const queryParams = new URLSearchParams();
 
+    queryParams.append('nome', nameFiltering)
+    queryParams.append('matricula', registrationFiltering)
+
     const idadeFilterField = filterFields.find((field) => field.name === 'idade');
-    const idadeMin = idadeFilterField?.min || 0; // Default to 0 if not found
-    const idadeMax = idadeFilterField?.max || 120; // Default to 120 if not found
-
+    const idadeMin = idadeFilterField?.min || 0;
+    const idadeMax = idadeFilterField?.max || 120;
     const filhosFilterField = filterFields.find((field) => field.name === 'filhos');
-    const filhosMin = filhosFilterField?.min || 0; // Default to 0 if not found
-    const filhosMax = filhosFilterField?.max || 20; // Default to 20 if not found
+    const filhosMin = filhosFilterField?.min || 0;
+    const filhosMax = filhosFilterField?.max || 20;
 
-  // Add filter values to the query only if they are not null or equal to default slider values
     if (filters.idade && filters.idade[0] !== idadeMin && filters.idade[1] !== idadeMax) {
       queryParams.append('idadeMinima', filters.idade[0]);
       queryParams.append('idadeMaxima', filters.idade[1]);
@@ -79,21 +71,24 @@ export function Associados() {
     if (filters.status !== undefined && filters.status !== 'Todos') {
       queryParams.append('status', filters.status);
     }
+    if (filters.pcd !== undefined && filters.pcd !== 'Todos') {
+      queryParams.append('pcd', filters.pcd);
+    }
+    if (filters.tipoAcesso !== undefined && filters.tipoAcesso !== 'Todos') {
+      queryParams.append('tipoAcesso', filters.tipoAcesso);
+    }
 
     queryParams.append('sortBy', orderBy.field || 'nome');
     queryParams.append('sortDirection', orderBy.direction || 'asc');
 
     const urlAll = `http://localhost:8081/api/v1/associados?${queryParams.toString()}`;
 
-    // Add pagination and sorting values to the query
     queryParams.append('page', currentPage);
-    queryParams.append('size', elementPerPage); // Assuming a page size of 10
+    queryParams.append('size', elementPerPage);
     
     const url = `http://localhost:8081/api/v1/associados?${queryParams.toString()}`;
-    // Build the full URL
     
     try {
-      // Fetch data from the server
       const response = await fetch(url, { method: 'GET', mode: 'cors' });
       if (!response.ok) {
         throw new Error(`Failed to load data: ${response.statusText}`);
@@ -106,8 +101,8 @@ export function Associados() {
       
       const data = await response.json();
       const dataAll = await responseAll.json();
-      
-      // Update states
+
+      setAssociates(dataAll.content || [])
       setPagedAssociates(data.content || []);
       setMaxPages(data.totalPages)
 
@@ -117,16 +112,38 @@ export function Associados() {
 
   }; 
 
-  const handleSearch = (term) => {
-    const lowerCaseTerm = term.toLowerCase();
-    const filteredData = associates.filter(
-      (assoc) =>
-        assoc.nome.toLowerCase().startsWith(lowerCaseTerm) ||
-        String(assoc.id).toLowerCase().startsWith(lowerCaseTerm)
+  const handleSearch = (options, { inputValue }) => {
+    var nameFilter = options.filter(
+    (option) =>
+        option.nome.toLowerCase().includes(inputValue.toLowerCase())
     );
 
-    setPagedAssociates(filteredData);
+    if (nameFilter.length > 0){
+        setNameFiltering(inputValue)
+    } else {
+        setNameFiltering(null)
+    }
+
+    var registrationFilter = options.filter(
+    (option) =>
+        String(option.matricula).includes(inputValue)
+    );
+
+    if (registrationFilter.length > 0){
+        setRegistrationFiltering(inputValue)
+    } else {
+        setRegistrationFiltering(null)
+    }
+
+    var nameRegistrationFilter = options.filter(
+    (option) =>
+        String(option.matricula).includes(inputValue) || 
+            option.nome.toLowerCase().includes(inputValue.toLowerCase())
+    );
+
+    return nameRegistrationFilter
   };
+
 
   return (
     <>
@@ -139,24 +156,55 @@ export function Associados() {
             <FaFilter />
           </button>
 
-          <Autocomplete
-            className='searchBar'
-            options={pagedAssociates}
-            freeSolo
-            inputValue={searchTerm}
-            onInputChange={(event, newInputValue) => setSearchTerm(newInputValue)}
-            getOptionLabel={(option) => option.nome || ''}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                label={
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <FaSearch /> Buscar associado
-                  </span>
-                }
-              />
-            )}
+            <Autocomplete
+              className='AssociadossearchBar'
+              options={associates}
+              value={value}
+              startdecorator={<FaSearch></FaSearch>}
+              freeSolo
+              getOptionLabel={(option) => option.nome || ''}
+              filterOptions={handleSearch}
+              onChange={loadAssociates}
+              renderInput={(params) => (
+                  <TextField {...params} variant="outlined"
+
+                      label={
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <FaSearch /> Buscar associado
+                          </span>
+                      }
+
+                      // Estilizando a barra de busca pq nao tem como fzr isso no arquivo de css
+      
+                      sx={{
+                          '& .MuiOutlinedInput-root': {
+                              borderWidth: '2px',
+                              borderColor: 'black',
+                              '& fieldset': {
+                                  borderWidth: '2px',
+                                  borderColor: 'rgba(0,0,0,.4)',
+                                  borderRadius: '7px'
+                              },
+                              '&:hover fieldset': {
+                                  borderColor: 'rgba(0,0,0,.6)',
+                              },
+                              '&.Mui-focused fieldset': {
+                                  borderColor: 'rgba(0,0,0,.6)',
+                              },
+                          },
+                          '& .MuiInputLabel-root': {
+                              color: 'rgba(0,0,0,.7)',
+                              fontSize: '16px',
+                              fontWeight: '500'
+                          },
+                          '& .MuiInputLabel-root.Mui-focused': {
+                              color: 'rgba(0,0,0,.7)',
+                          },
+                      }}
+
+                      // -----
+                  />
+              )}
           />
 
           <button className='orderby' onClick={() => setOrderDialogOpen(true)}>
