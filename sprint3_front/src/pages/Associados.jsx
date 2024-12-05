@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './style/Associados.css';
 import { IoArrowBack } from 'react-icons/io5';
-import { FaFilter, FaSortAmountDown, FaSearch, FaTrash, FaPencilAlt } from 'react-icons/fa';
+import { FaFilter, FaSortAmountDown, FaTrash, FaPencilAlt, FaSearch } from 'react-icons/fa';
 import { Autocomplete, Pagination, TextField } from "@mui/material";
 import FilterDialog from './FilterDialog';
 import OrderDialog from './OrderDialog';
@@ -142,6 +142,12 @@ export function Associados() {
     return nameRegistrationFilter
   };
 
+  const handleSelect = (event, newValue) => {
+    setValue(newValue || '');
+    loadAssociates();
+  }
+
+
 
   return (
     <>
@@ -154,54 +160,55 @@ export function Associados() {
             <FaFilter />
           </button>
 
-          <Autocomplete
-                        className='AssociadossearchBar'
-                        options={associates}
-                        freeSolo
-                        getOptionLabel={(option) => option.nome}
-                        filterOptions={handleSearch}
-                        onChange={loadAssociates}
-                        renderInput={(params) => (
-                            <TextField {...params} variant="outlined"
+            <Autocomplete
+              className='AssociadossearchBar'
+              options={associates}
+              startDecorator={<FaSearch></FaSearch>}
+              freeSolo
+              getOptionLabel={(option) => option.nome}
+              filterOptions={handleSearch}
+              onChange={handleSelect}
+              renderInput={(params) => (
+                  <TextField {...params} variant="outlined"
 
-                                label={
-                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <FaSearch /> Buscar associado
-                                    </span>
-                                }
+                      label={
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <FaSearch /> Buscar associado
+                          </span>
+                      }
 
-                                // Estilizando a barra de busca pq nao tem como fzr isso no arquivo de css
-                
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderWidth: '2px',
-                                        borderColor: 'black',
-                                        '& fieldset': {
-                                            borderWidth: '2px',
-                                            borderColor: 'rgba(0,0,0,.4)',
-                                            borderRadius: '7px'
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: 'rgba(0,0,0,.6)',
-                                        },
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: 'rgba(0,0,0,.6)',
-                                        },
-                                    },
-                                    '& .MuiInputLabel-root': {
-                                        color: 'rgba(0,0,0,.7)',
-                                        fontSize: '16px',
-                                        fontWeight: '500'
-                                    },
-                                    '& .MuiInputLabel-root.Mui-focused': {
-                                        color: 'rgba(0,0,0,.7)',
-                                    },
-                                }}
+                      // Estilizando a barra de busca pq nao tem como fzr isso no arquivo de css
+      
+                      sx={{
+                          '& .MuiOutlinedInput-root': {
+                              borderWidth: '2px',
+                              borderColor: 'black',
+                              '& fieldset': {
+                                  borderWidth: '2px',
+                                  borderColor: 'rgba(0,0,0,.4)',
+                                  borderRadius: '7px'
+                              },
+                              '&:hover fieldset': {
+                                  borderColor: 'rgba(0,0,0,.6)',
+                              },
+                              '&.Mui-focused fieldset': {
+                                  borderColor: 'rgba(0,0,0,.6)',
+                              },
+                          },
+                          '& .MuiInputLabel-root': {
+                              color: 'rgba(0,0,0,.7)',
+                              fontSize: '16px',
+                              fontWeight: '500'
+                          },
+                          '& .MuiInputLabel-root.Mui-focused': {
+                              color: 'rgba(0,0,0,.7)',
+                          },
+                      }}
 
-                                // -----
-                            />
-                        )}
-                    />
+                      // -----
+                  />
+              )}
+          />
 
           <button className='orderby' onClick={() => setOrderDialogOpen(true)}>
             <FaSortAmountDown />
