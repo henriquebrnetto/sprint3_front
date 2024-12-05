@@ -34,7 +34,7 @@ export function Associados() {
     { name: 'tipoAcesso', label: 'Tipo de Acesso', type: 'threeOptions', default: 'Todos', options: [ { value: 'Todos', label: 'Todos' }, { value: 'admin', label: 'Administrador' }, { value: 'colaborador', label: 'Colaborador/Voluntário' },  { value: 'associado', label: 'Associado' }] } ];
 
   const orderFields = [ { name: 'nome', label: 'Nome' }, { name: 'idade', label: 'Idade' }, { name: 'filhos', label: 'Filhos' }, { name: 'pontos', label: 'Pontos' } ];
-  
+
   useEffect(() => {
     loadAssociates();
   }, [filters, orderBy, currentPage]);

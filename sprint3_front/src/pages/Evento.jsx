@@ -26,7 +26,7 @@ export function Evento() {
     useEffect(() => {
         loadEvent(eventId);
         loadPresences(eventId);
-    }, [])
+    }, [pageN])
 
     const loadPresences = async (eventId) => {
         const elementPerPage = 10
@@ -118,7 +118,7 @@ export function Evento() {
         }
         return pagedPresences
     }
-    
+
     const flipStatus = () => {
         updateField('status', !event.status)
     };
