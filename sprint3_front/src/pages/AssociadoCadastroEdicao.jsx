@@ -1,273 +1,198 @@
 import { useEffect, useState } from 'react';
-
 import './style/Evento.css';
-import { IoArrowBack } from 'react-icons/io5';
-import { FaFilter, FaSortAmountDown, FaSearch, FaTrash, FaPencilAlt, FaCalendar, FaTshirt } from 'react-icons/fa';
-import { LuShirt } from "react-icons/lu";
-import { GrClose } from "react-icons/gr";
-import { Autocomplete, Pagination, TextField } from "@mui/material";
-
-import {useParams} from 'react-router-dom';
-
+import { useParams } from 'react-router-dom';
+import { Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select } from '@mui/material';
 
 export function AssociadoCadastroEdicao() {
+    const { associateRegistration } = useParams();
     
-    const {associateRegistration} = useParams();
+    const fieldConfig = [
+        { name: 'nome', label: 'Nome', type: 'text', required: true },
+        { name: 'dataNascimento', label: 'Data de Nascimento', type: 'date', required: true },
+        { name: 'idade', label: 'Idade', type: 'number', required: true },
+        { name: 'rg', label: 'RG', type: 'text', required: true },
+        { name: 'cpf', label: 'CPF', type: 'text', required: true },
+        { name: 'matricula', label: 'Matrícula', type: 'text', required: true },
+        { name: 'email', label: 'E-mail', type: 'text', required: true },
+        { name: 'senha', label: 'Senha', type: 'text', required: true },
+        { name: 'celular', label: 'Celular', type: 'text', required: true },
+        { name: 'endereco', label: 'Endereço', type: 'text', required: true },
+        { name: 'bairro', label: 'Bairro', type: 'text', required: true },
+        { name: 'complemento', label: 'Complemento', type: 'text', required: true },
+        { name: 'cep', label: 'CEP', type: 'text', required: true },
+        { name: 'filhos', label: 'Filhos', type: 'number', required: true },
+        { name: 'pontos', label: 'Pontos', type: 'number', required: true },
+        { name: 'faltas', label: 'Faltas', type: 'number', required: true },
+        { name: 'observacao', label: 'Observação', type: 'textarea', required: false },
+        { name: 'sexo', label: 'Sexo', type: 'threeOptions', default: 'M', options: [ { value: 'M', label: 'Masculino' }, { value: 'F', label: 'Feminino' },  { value: 'O', label: 'Outros' }] },
+        { name: 'tipoAcesso', label: 'Tipo de Acesso', type: 'threeOptions', default: 'associado', options: [ { value: 'admin', label: 'Administrador' }, { value: 'colaborador', label: 'Colaborador/Voluntário' },  { value: 'associado', label: 'Associado' }] },
+    ]
 
-    const [associate, setAssociate] = useState({});
-
-    const [vals, setVals] = useState(
-        {
-            'nome': null,
-            'dataNascimento': null,
-            'idade': null,
-            'rg': null,
-            'cpf': null,
-            'casado': false,
-            'matricula': null,
-            'sexo': null,
-            'pcd': false,
-            'email': null,
-            'celular': null,
-            'endereco': null,
-            'bairro': null,
-            'complemento': null,
-            'cep': null,
-            'filhos': null,
-            'pontos': null,
-            'status': true,
-            'faltas': null,
-            'observacao': null,
-        }
-    )
+    const initializeDefaults = () => {
+        const defaults = {};
+        fieldConfig.forEach((field) => {
+            defaults[field.name] = field.default || (field.type === 'threeOptions' ? '' : null);
+        });
+        return defaults;
+    };
+    
+    const [vals, setVals] = useState(initializeDefaults());
 
     useEffect(() => {
-        loadAssociate();
-    }, [])
-
-
-    function loadAssociate(associateRegistration) {
-        // fetch(<>'localhost:8081/api/v1/presenca/evento/{event.id}'</>)
-        //     .then(response => response.json())
-        //     .then(data => setPagedPresences(data))
-        //     .catch(error => console.error('Erro ao carregar eventos ativos:', error));\
-        const data = [{ 
-            'nome': 'Coisa boa da silva',
-            'data': '23/04/2025',
-            'id': '98369420',
-        }];
-
-        setAssociate(data)
-    }
-
-    function getDate() {
-        const today = new Date();
-        const month = today.getMonth() + 1;
-        const year = today.getFullYear();
-        const date = today.getDate();
-        
-        var strmais = ''
-
-        if (date < 10){
-            strmais = '0'
+        if (associateRegistration) {
+            loadAssociate();
         }
-        return `${year}-${month}-${strmais}${date}`;
-    }
+    }, [associateRegistration]);
 
-    function capitalizeFirstLetter(val) {
-        return String(val).charAt(0).toUpperCase() + String(val).slice(1);
-    }
+    const loadAssociate = async () => {
+        try {
+            const response = await fetch(`http://localhost:8081/api/v1/associados/${associateRegistration}`);
+            if (!response.ok) {
+                throw new Error(`Failed to load associate: ${response.statusText}`);
+            }
+            const data = await response.json();
+            setVals(data);
+        } catch (error) {
+            console.error('Error loading associate:', error);
+        }
+    };
 
-    // -------
+    const saveAssociate = async () => {
+        try {
+            const url = associateRegistration
+                ? `http://localhost:8081/api/v1/associados/${associateRegistration}` // PUT request
+                : `http://localhost:8081/api/v1/associados`; // POST request for new associates
 
-    // lidar com buscas e mudanca de paginacao
+            const method = associateRegistration ? 'PUT' : 'POST';
 
-    // -------
+            const response = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(vals),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to ${method === 'PUT' ? 'update' : 'create'} associate: ${response.statusText}`);
+            }
+
+            alert(`Associado ${method === 'PUT' ? 'atualizado' : 'criado'} com sucesso!`);
+        } catch (error) {
+            console.error('Error saving associate:', error);
+            alert('Erro ao salvar associado.');
+        }
+    };
 
     const updateField = (field, value) => {
         setVals((prevVals) => ({
-          ...prevVals,
-          [field]: value,
+            ...prevVals,
+            [field]: value,
         }));
     };
 
     const flipCasado = () => {
-        updateField('casado', !vals.casado)
+        updateField('casado', !vals.casado);
     };
 
     const flipPcd = () => {
-        updateField('pcd', !vals.pcd)
+        updateField('pcd', !vals.pcd);
     };
 
-    const setSexo = (sx) => {
-        updateField('sexo', sx)
-    }
+    const checkFieldStatus = (field, value) => {
+        return vals[field] === value ? 'Active' : '';
+    };
 
-    const checkCasadoSexoPcd = (sx) => {
-        if (sx == 'C'){
-            if (vals.casado){
-                return 'Active'
-            }
-            return ''
-        }
-
-        if (sx == 'P'){
-            if (vals.pcd){
-                return 'Active'
-            }
-            return ''
-        }
-
-        if (vals.sexo == sx){
-            return 'Active'
-        }
-        return ''
-    }
+    const getDate = () => {
+        const today = new Date();
+        const month = today.getMonth() + 1;
+        const year = today.getFullYear();
+        const date = today.getDate();
+        return `${year}-${month < 10 ? '0' + month : month}-${date < 10 ? '0' + date : date}`;
+    };
 
     return (
         <>
-            <div className='associadocadastroedicaoMainGrid'>
-                <h1>A</h1>
-                <>{vals.pcd ?(
-                    <h1>A</h1>
-                ):(
-                    <></>
-                )}</>
-                <div className='associadocadastroedicaoForm'>
-
-                    <div className="associadocadastroedicaoNome">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Nome</label>
-                            <input name="nome" type="text" className="form-control input-lg" value={vals.nome || "" } onChange={(e) => updateField(e.target.name, e.target.value)}/>
+            <div className="associadocadastroedicaoMainGrid">
+                <h1>{associateRegistration ? 'Editar Associado' : 'Cadastrar Associado'}</h1>
+                <div className="associadocadastroedicaoForm">
+                    {/* Dynamically Render Input Fields */}
+                    {fieldConfig.map((field) => (
+                        <div key={field.name} className="associadocadastroedicaoInput">
+                            <label>
+                                {field.required && <span className="required">*</span>}
+                                {field.label}
+                            </label>
+                            {field.type === 'textarea' ? (
+                                <textarea
+                                    name={field.name}
+                                    rows="4"
+                                    cols="50"
+                                    value={vals[field.name] || ''}
+                                    onChange={(e) => updateField(field.name, e.target.value)}
+                                />
+                            ) : field.type === 'threeOptions' ? (
+                                <div key={field.name} className="associadocadastroedicaoInput">
+                                    <FormControl fullWidth margin="dense">
+                                        <InputLabel>{field.label}</InputLabel>
+                                        <Select
+                                            label={field.label}
+                                            name={field.name}
+                                            value={vals[field.name] !== null && vals[field.name] !== undefined ? String(vals[field.name]) : field.default || ''} // Ensure valid value
+                                            onChange={(e) => updateField(field.name, e.target.value)}
+                                        >
+                                            {field.options.map((option) => (
+                                                <MenuItem key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                              ) : (
+                                <input
+                                    name={field.name}
+                                    type={field.type}
+                                    className="form-control input-lg"
+                                    value={vals[field.name] || ''}
+                                    onChange={(e) => updateField(field.name, e.target.value)}
+                                />
+                            )}
                         </div>
-                    </div>
+                    ))}
 
-                    <div className="associadocadastroedicaoDataNascimento">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Data de Nascimento</label>
-                            <input name="dataNascimento" type="date" className="form-control input-lg" value={vals.dataNascimento || getDate() } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoIdade">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Idade</label>
-                            <input name="idade" type="number" className="form-control input-lg" value={vals.idade || null } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoRg">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>RG</label>
-                            <input name="rg" type="text" className="form-control input-lg" value={vals.rg || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoCpf">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>CPF</label>
-                            <input name="cpf" type="text" className="form-control input-lg" value={vals.cpf || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
+                    {/* Casado Field */}
                     <div className="associadocadastroedicaoCasado">
-                        <h3>Casado:</h3>
-                        <button id={'associadocadastroedicaoCasado'+checkCasadoSexoPcd('C')} onClick={flipCasado}></button>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={vals.casado || false} // Fallback to false
+                                onChange={flipCasado}
+                            />
+                        }
+                        label="Casado"
+                    />
                     </div>
 
-                    <div className="associadocadastroedicaoMatricula">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Matrícula</label>
-                            <input name="matricula" type="text" className="form-control input-lg" value={vals.matricula || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoSexo">
-                        <h3>Sexo:</h3>
-                        <div className='associadocadastroedicaoSexoButtons'>
-                            <button id={'associadocadastroedicaoSexoH'+checkCasadoSexoPcd('H')} onClick={() => setSexo('H')}>H</button>
-                            <button id={'associadocadastroedicaoSexoM'+checkCasadoSexoPcd('M')} onClick={() => setSexo('M')}>M</button>
-                            <button id={'associadocadastroedicaoSexoO'+checkCasadoSexoPcd('O')} onClick={() => setSexo('O')}>O</button>
-                        </div>
-                    </div>
-
+                    {/* PCD Field */}
                     <div className="associadocadastroedicaoPcd">
-                        <h3>PCD:</h3>
-                        <button id={'associadocadastroedicaoPcd'+checkCasadoSexoPcd('P')} onClick={flipPcd}></button>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={vals.pcd || false} // Fallback to false
+                                    onChange={flipPcd}
+                                />
+                            }
+                            label="PCD"
+                        />
                     </div>
 
-                    <div className="associadocadastroedicaoEmail">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>E-mail</label>
-                            <input name="email" type="text" className="form-control input-lg" value={vals.email || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
+                    {/* Save Button */}
+                    <div className="associadocadastroedicaoSave">
+                        <button className="saveButton" onClick={saveAssociate}>
+                            Salvar
+                        </button>
                     </div>
-
-                    <div className="associadocadastroedicaoCelular">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Celular</label>
-                            <input name="celular" type="text" className="form-control input-lg" value={vals.celular || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoEndereco">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Endereco</label>
-                            <input name="endereco" type="text" className="form-control input-lg" value={vals.endereco || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoBairro">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Bairro</label>
-                            <input name="bairro" type="text" className="form-control input-lg" value={vals.bairro || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoComplemento">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Complemento</label>
-                            <input name="complemento" type="text" className="form-control input-lg" value={vals.complemento || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoCep">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>CEP</label>
-                            <input name="cep" type="text" className="form-control input-lg" value={vals.cep || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoFilhos">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Filhos</label>
-                            <input name="filhos" type="number" className="form-control input-lg" value={vals.filhos || null } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoPontos">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Pontos</label>
-                            <input name="pontos" type="number" className="form-control input-lg" value={vals.pontos || null } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoFaltas">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Faltas</label>
-                            <input name="faltas" type="number" className="form-control input-lg" value={vals.faltas || 0 } onChange={(e) => updateField(e.target.name, e.target.value)}/>
-                        </div>
-                    </div>
-
-                    <div className="associadocadastroedicaoObservacao">
-                        <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Observação</label>
-                            <textarea name='observacao' rows='4' cols='50' value={vals.observacao || '' } onChange={(e) => updateField(e.target.name, e.target.value)}></textarea>
-                        </div>
-                    </div>
-                        
                 </div>
             </div>
         </>
-    );  
+    );
 }

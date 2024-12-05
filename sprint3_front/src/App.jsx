@@ -24,7 +24,7 @@ function App() {
 
   return (
     <>
-      <AppBar position="fixed" sx={{ backgroundColor: "#A71220" }} >
+      <AppBar position="fixed" sx={{ backgroundColor: "#A71220", marginBottom: "50px" }} >
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <img className="logoMST" src={mst} />
@@ -63,10 +63,12 @@ function App() {
         
         <Route path='/eventos' element={<Eventos/>}/>
         <Route path='/evento/:eventId' element={<Evento/>}/>
-        <Route path='/eventoCadastroEdicao/:eventId' element={<EventoCadastroEdicao/>}/>
+        <Route path='/eventoCadastroEdicao' element={<EventoCadastroEdicao />}/>
+        <Route path='/eventoCadastroEdicao/:eventId' element={<EventoCadastroEdicao />}/>
 
         <Route path='/associados' element={<Associados/>}/>
         <Route path='/associado/:associateRegistration' element={<Associado/>}/>
+        <Route path='/associadoCadastroEdicao' element={<AssociadoCadastroEdicao/>}/>
         <Route path='/associadoCadastroEdicao/:associateRegistration' element={<AssociadoCadastroEdicao/>}/>
 
         <Route path='/marcarpresenca/:eventId' element={<MarcarPresenca/>}/>

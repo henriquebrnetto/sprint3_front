@@ -19,12 +19,13 @@ body {
     justify-content: flex-start;
 }
 
+
 #eventosPreviousPageButton {
     background-color: rgba(0,0,0,0);
     border-radius: 1000px;
     color: rgba(18, 18, 18, 0.87);
     transition: .5s;
-    width: 4vw;
+    width: 7vw;
     justify-content: center;
     align-items: center;
     border: none;
@@ -40,7 +41,10 @@ body {
     gap: 5px;
 }
 
-.eventosSearchBar {
+#eventosAssociadosSearchBar {
+    flex-grow: 1;
+}
+.eventosAssociadosSearchBar {
     flex-grow: 1;
     color: white;
 }
@@ -48,6 +52,14 @@ body {
 .eventosTituloEventos {
     display: flex;
     align-items: flex-start;
+}
+
+#eventosNewEvent {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin-bottom: 15px;
+    margin-right: 15px;
 }
 
 .eventosEvent {
@@ -60,19 +72,24 @@ body {
     padding-top: 15px;
 }
 
-.eventosEventBox {
+#eventosEventBox {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    flex-grow: 1;
+    /* flex-grow: 1; */
     background: rgba(25,25,25, 1);
     border-radius: 10px;
     padding-left: 3vw;
     height: 60px;
 }
 
+.eventosEventBox {
+    min-width: 80%;
+}
+
 .eventosEditButton, .eventosDeleteButton {
     height: 60px;
+    flex-grow: 0;
 }
 
 

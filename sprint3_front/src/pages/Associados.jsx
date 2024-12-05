@@ -6,6 +6,8 @@ import { Autocomplete, Pagination, TextField } from "@mui/material";
 import FilterDialog from './FilterDialog';
 import OrderDialog from './OrderDialog';
 
+import { Link } from 'react-router'
+
 export function Associados() {
   const [associates, setAssociates] = useState([]);
   const [pagedAssociates, setPagedAssociates] = useState([]);
@@ -37,7 +39,7 @@ export function Associados() {
 
   useEffect(() => {
     loadAssociates();
-  }, [filters, orderBy, currentPage]);
+  }, [filters, orderBy, currentPage, nameFiltering, registrationFiltering]);
   
   const loadAssociates = async () => {
     const elementPerPage = 10
@@ -112,121 +114,73 @@ export function Associados() {
 
   }; 
 
-  const handleSearch = (options, { inputValue }) => {
-    var nameFilter = options.filter(
-    (option) =>
-        option.nome.toLowerCase().includes(inputValue.toLowerCase())
-    );
-
-    if (nameFilter.length > 0){
-        setNameFiltering(inputValue)
-    } else {
-        setNameFiltering(null)
-    }
-
-    var registrationFilter = options.filter(
-    (option) =>
-        String(option.matricula).includes(inputValue)
-    );
-
-    if (registrationFilter.length > 0){
-        setRegistrationFiltering(inputValue)
-    } else {
-        setRegistrationFiltering(null)
-    }
-
+  const handleSearchOptions = (options, { inputValue }) => {
     var nameRegistrationFilter = options.filter(
     (option) =>
         String(option.matricula).includes(inputValue) || 
             option.nome.toLowerCase().includes(inputValue.toLowerCase())
     );
-
     return nameRegistrationFilter
   };
+  
+  const handleSearch = ({ inputValue }) => {
 
+    console.log(registrationFiltering)
+    console.log(nameFiltering)
+
+    var registrationFilter = associates.filter(
+    (option) =>
+        String(option.matricula).includes(inputValue)
+    );
+    var nameFilter = associates.filter(
+    (option) =>
+      option.nome.toLowerCase().includes(inputValue.toLowerCase())
+    );
+    
+    if (registrationFilter.length > 0){
+      setRegistrationFiltering(inputValue)
+    } else {
+      setRegistrationFiltering(null)
+    }
+    
+    if (nameFilter.length > 0){
+      setNameFiltering(inputValue)
+    } else {
+      setNameFiltering(null)
+    }
+  };
 
   return (
     <>
-      <div className='mainGrid'>
-        <div className='previousPage'>
-          <button id='previousPageButton'><IoArrowBack /></button>
+      <div className='associadosMainGrid'>
+        <div className='associadosPreviousPage'>
+          <Link to='/homeadmin'><button id='associadosPreviousPageButton'><IoArrowBack /></button></Link>
         </div>
-        <div className='topSection'>
-          <button className='filter' onClick={() => setFilterDialogOpen(true)}>
+        <div className='associadosTopSection'>
+          <button className='associadosFilter' onClick={() => setFilterDialogOpen(true)}>
             <FaFilter />
           </button>
 
-            <Autocomplete
-              className='AssociadossearchBar'
-              options={associates}
-              value={value}
-              startdecorator={<FaSearch></FaSearch>}
-              freeSolo
-              getOptionLabel={(option) => option.nome || ''}
-              filterOptions={handleSearch}
-              onChange={loadAssociates}
-              renderInput={(params) => (
-                  <TextField {...params} variant="outlined"
-
-                      label={
-                          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <FaSearch /> Buscar associado
-                          </span>
-                      }
-
-                      // Estilizando a barra de busca pq nao tem como fzr isso no arquivo de css
-      
-                      sx={{
-                          '& .MuiOutlinedInput-root': {
-                              borderWidth: '2px',
-                              borderColor: 'black',
-                              '& fieldset': {
-                                  borderWidth: '2px',
-                                  borderColor: 'rgba(0,0,0,.4)',
-                                  borderRadius: '7px'
-                              },
-                              '&:hover fieldset': {
-                                  borderColor: 'rgba(0,0,0,.6)',
-                              },
-                              '&.Mui-focused fieldset': {
-                                  borderColor: 'rgba(0,0,0,.6)',
-                              },
-                          },
-                          '& .MuiInputLabel-root': {
-                              color: 'rgba(0,0,0,.7)',
-                              fontSize: '16px',
-                              fontWeight: '500'
-                          },
-                          '& .MuiInputLabel-root.Mui-focused': {
-                              color: 'rgba(0,0,0,.7)',
-                          },
-                      }}
-
-                      // -----
-                  />
-              )}
-          />
-
-          <button className='orderby' onClick={() => setOrderDialogOpen(true)}>
+          <button className='associadosOrderBy' onClick={() => setOrderDialogOpen(true)}>
             <FaSortAmountDown />
           </button>
         </div>
-        <h2 className='tituloAssociados'>Associados:</h2>
-        <div className='Associados'>
+        <h2 className='associadosTituloAssociados'>Associados:</h2>
+        <div className='associadosAssociados'>
           {pagedAssociates.map((associate) => (
-            <div className='associate' key={associate.id}>
-              <button className='associateBox'>
-                <h3 id='associateName'>{associate.nome}</h3>
-              </button>
-              <button className='editButton'><FaPencilAlt /></button>
-              <button className='deleteButton'><FaTrash /></button>
+            <div className='associadosAssociate' key={associate.id}>
+                <Link to={'/associado/' + associate.matricula}><button id='associadosAssociateBox'>
+                  <h3 id='associadosAssociateName'>{associate.nome}</h3>
+                </button></Link>
+              <Link to={'/associadocadastroedicao/' + associate.matricula}><button className='associadosEditButton'><FaPencilAlt /></button></Link>
+              <button className='associadosDeleteButton'><FaTrash /></button>
             </div>
           ))}
         </div>
       </div>
       
       {maxPages > 1 ? (
-            <Pagination count={maxPages} page={pageN + 1} onChange={handlePageChange} className='AssociadosnavBar' sx={{justifyContent:"center", alignItems: "center", display:"flex", marginTop:"15px"}}/>
+            <Pagination count={maxPages} page={pageN + 1} onChange={handlePageChange} className='eventAssociadosnavBar' sx={{justifyContent:"center", alignItems: "center", display:"flex", marginTop:"15px"}}/>
         ):(
             <></>
         )}

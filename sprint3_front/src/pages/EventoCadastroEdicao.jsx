@@ -1,179 +1,249 @@
 import { useEffect, useState } from 'react';
-
 import './style/Associado.css';
 import { IoArrowBack } from 'react-icons/io5';
-import { FaFilter, FaSortAmountDown, FaSearch, FaTrash, FaPencilAlt, FaCalendar, FaTshirt } from 'react-icons/fa';
-import { LuShirt } from "react-icons/lu";
-import { GrClose } from "react-icons/gr";
-import { Autocomplete, Pagination, TextField } from "@mui/material";
-
-import {useParams} from 'react-router-dom';
-
+import { useParams } from 'react-router-dom';
+import { Checkbox, FormControlLabel } from '@mui/material';
 
 export function EventoCadastroEdicao() {
-    
-    const {eventRegistration} = useParams();
+    const { eventId } = useParams();
+    const [vals, setVals] = useState({
+        nome: null,
+        data: null,
+        local: null,
+        descricao: null,
+        pontosComCamisa: null,
+        pontosSemCamisa: null,
+        pontosColaborador: null,
+        reuniaoMensal: null,
+        status: false,
+        contribuicaoTotal: 0,
+        observacao: null,
+    });
 
-    const [event, setEvent] = useState({});
-
-    const [vals, setVals] = useState(
-        {
-            'nome': null,
-            'data': null,
-            'local': null,
-            'descricao': null,
-            'pontosComCamisa': null,
-            'pontosSemCamisa': null,
-            'pontosColaborador': null,
-            'reuniaoMensal': null,
-            'status': false,
-            'contribuicaoTotal': 0
-        }
-    )
-
-    
-    if (eventRegistration != 'cadastro') { 
-        useEffect(() => {
+    // Fetch event details when `eventId` is not 'cadastro'
+    useEffect(() => {
+        if (eventId !== undefined) {
             loadEvent();
-        }, [])
-    }
-
-    // funcoes para definir constantes acima
-
-    function loadEvent(eventRegistration) {
-        // fetch(<>'localhost:8081/api/v1/presenca/evento/{event.id}'</>)
-        //     .then(response => response.json())
-        //     .then(data => setPagedPresences(data))
-        //     .catch(error => console.error('Erro ao carregar eventos ativos:', error));\
-        const data = [{ 
-            'nome': 'Coisa boa da silva',
-            'data': '23/04/2025',
-            'id': '98369420',
-        }];
-
-        setEvent(data)
-    }
-
-    function getDate() {
-        const today = new Date();
-        const month = today.getMonth() + 1;
-        const year = today.getFullYear();
-        const date = today.getDate();
-        
-        var strmais = ''
-
-        if (date < 10){
-            strmais = '0'
         }
-        return `${year}-${month}-${strmais}${date}`;
-    }
+    }, [eventId]);    
 
-    // -------
+    const loadEvent = async () => {
+        try {
+            const response = await fetch(`http://localhost:8081/api/v1/eventos/${eventId}`);
+            if (!response.ok) {
+                throw new Error(`Failed to load event: ${response.statusText}`);
+            }
+            const data = await response.json();
+            setVals({
+                nome: data.nome || '',
+                data: data.data || '',
+                local: data.local || '',
+                descricao: data.descricao || '',
+                pontosComCamisa: data.pontosComCamisa || null,
+                pontosSemCamisa: data.pontosSemCamisa || null,
+                pontosColaborador: data.pontosColaborador || null,
+                reuniaoMensal: data.reuniaoMensal || false,
+                status: data.status || false,
+                contribuicaoTotal: data.contribuicaoTotal || 0,
+                observacao: data.observacao || '',
+            });
+        } catch (error) {
+            console.error('Error loading event:', error);
+        }
+    };    
 
-    // lidar com buscas e mudanca de paginacao
-
-    // -------
+    const saveEvent = async () => {
+        try {
+            const url = eventRegistration
+                ? `http://localhost:8081/api/v1/eventos/${eventId}` // PUT request
+                : `http://localhost:8081/api/v1/eventos`; // POST request for new events
+    
+            const method = eventRegistration ? 'PUT' : 'POST';
+    
+            const response = await fetch(url, {
+                method: method, // Dynamically set the method
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(vals),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Failed to ${method === 'PUT' ? 'update' : 'create'} event: ${response.statusText}`);
+            }
+    
+            alert(`Evento ${method === 'PUT' ? 'atualizado' : 'criado'} com sucesso!`);
+        } catch (error) {
+            console.error('Error saving event:', error);
+            alert('Erro ao salvar evento.');
+        }
+    };    
 
     const updateField = (field, value) => {
         setVals((prevVals) => ({
-          ...prevVals,
-          [field]: value,
+            ...prevVals,
+            [field]: value,
         }));
     };
 
     const flipStatus = () => {
-        updateField('status', !vals.status)
+        updateField('status', !vals.status);
     };
 
     const flipMensal = () => {
-        updateField('mensal', !vals.mensal)
+        updateField('reuniaoMensal', !vals.reuniaoMensal);
     };
 
-    const checkStatus = (sx) => {
-        if (vals.status){
-            return 'Active'
-        }
-        return ''
-    }
-    const checkMensal = (sx) => {
-        if (vals.reuniaoMensal){
-            return 'Active'
-        }
-        return ''
-    }
+    const checkStatus = () => {
+        return vals.status ? 'Active' : '';
+    };
+
+    const checkMensal = () => {
+        return vals.reuniaoMensal ? 'Active' : '';
+    };
+
+    const getDate = () => {
+        const today = new Date();
+        const month = today.getMonth() + 1;
+        const year = today.getFullYear();
+        const date = today.getDate();
+        return `${year}-${month < 10 ? '0' + month : month}-${date < 10 ? '0' + date : date}`;
+    };
 
     return (
         <>
             <div className='associadocadastroedicaoMainGrid'>
-                <h1>A</h1>
+                <h1>{eventId === undefined ? "Cadastrar Evento" : "Editar Evento"}</h1>
                 <div className='associadocadastroedicaoForm'>
 
                     <div className="associadocadastroedicaoNome">
                         <div className="associadocadastroedicaoInput">
                             <label><span className="required">*</span>Nome</label>
-                            <input name="nome" type="text" className="form-control input-lg" value={vals.nome || "" } onChange={(e) => updateField(e.target.name, e.target.value)}/>
+                            <input
+                                name="nome"
+                                type="text"
+                                className="form-control input-lg"
+                                value={vals.nome || ""}
+                                onChange={(e) => updateField(e.target.name, e.target.value)}
+                            />
                         </div>
                     </div>
 
                     <div className="associadocadastroedicaoData">
                         <div className="associadocadastroedicaoInput">
                             <label><span className="required">*</span>Data</label>
-                            <input name="data" type="date" className="form-control input-lg" value={vals.data || getDate() } onChange={(e) => updateField(e.target.name, e.target.value)}/>
+                            <input
+                                name="data"
+                                type="date"
+                                className="form-control input-lg"
+                                value={vals.data || getDate()}
+                                onChange={(e) => updateField(e.target.name, e.target.value)}
+                            />
                         </div>
                     </div>
 
                     <div className="associadocadastroedicaoLocal">
                         <div className="associadocadastroedicaoInput">
                             <label><span className="required">*</span>Local</label>
-                            <input name="local" type="text" className="form-control input-lg" value={vals.local || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
+                            <input
+                                name="local"
+                                type="text"
+                                className="form-control input-lg"
+                                value={vals.local || ""}
+                                onChange={(e) => updateField(e.target.name, e.target.value)}
+                            />
                         </div>
                     </div>
 
                     <div className="associadocadastroedicaoDescricao">
                         <div className="associadocadastroedicaoInput">
-                            <label><span className="required">*</span>Descricao</label>
-                            <input name="descricao" type="text" className="form-control input-lg" value={vals.descricao || '' } onChange={(e) => updateField(e.target.name, e.target.value)}/>
+                            <label><span className="required">*</span>Descrição</label>
+                            <input
+                                name="descricao"
+                                type="text"
+                                className="form-control input-lg"
+                                value={vals.descricao || ""}
+                                onChange={(e) => updateField(e.target.name, e.target.value)}
+                            />
                         </div>
                     </div>
 
                     <div className="associadocadastroedicaoStatus">
-                        <h3>Status:</h3>
-                        <button id={'associadocadastroedicaoStatus'+checkStatus()} onClick={flipStatus}></button>
+                        <FormControlLabel className="associadocadastroedicaoReuniaoMensal" 
+                            control={<Checkbox 
+                                id={'associadocadastroedicaoStatus' + checkStatus()} 
+                                onClick={flipStatus}
+                                checked={vals.status || false}
+                                />}
+                            label="Status" />
                     </div>
 
                     <div className="associadocadastroedicaoReuniaoMensal">
-                        <h3>Reuniao Mensal:</h3>
-                        <button id={'associadocadastroedicaoReuniaoMensal'+checkMensal()} onClick={flipMensal}></button>
+                        <FormControlLabel className="associadocadastroedicaoReuniaoMensal" 
+                            control={<Checkbox 
+                                id={'associadocadastroedicaoReuniaoMensal' + checkMensal()} 
+                                onClick={flipMensal}
+                                checked={vals.reuniaoMensal || false}
+                                />}
+                            label="Reunião Mensal" />
                     </div>
 
                     <div className="associadocadastroedicaoPontosComCamisa">
                         <div className="associadocadastroedicaoInput">
                             <label><span className="required">*</span>Pontos Com Camisa</label>
-                            <input name="pontosComCamisa" type="number" className="form-control input-lg" value={vals.pontosComCamisa || null } onChange={(e) => updateField(e.target.name, e.target.value)}/>
+                            <input
+                                name="pontosComCamisa"
+                                type="number"
+                                className="form-control input-lg"
+                                value={vals.pontosComCamisa || ""}
+                                onChange={(e) => updateField(e.target.name, e.target.value)}
+                            />
                         </div>
                     </div>
 
                     <div className="associadocadastroedicaoPontosSemCamisa">
                         <div className="associadocadastroedicaoInput">
                             <label><span className="required">*</span>Pontos Sem Camisa</label>
-                            <input name="pontosSemCamisa" type="number" className="form-control input-lg" value={vals.pontosSemCamisa || null } onChange={(e) => updateField(e.target.name, e.target.value)}/>
+                            <input
+                                name="pontosSemCamisa"
+                                type="number"
+                                className="form-control input-lg"
+                                value={vals.pontosSemCamisa || ""}
+                                onChange={(e) => updateField(e.target.name, e.target.value)}
+                            />
                         </div>
                     </div>
 
                     <div className="associadocadastroedicaoPontosColaborador">
                         <div className="associadocadastroedicaoInput">
                             <label><span className="required">*</span>Pontos Colaborador</label>
-                            <input name="pontosColaborador" type="number" className="form-control input-lg" value={vals.pontosColaborador || null } onChange={(e) => updateField(e.target.name, e.target.value)}/>
+                            <input
+                                name="pontosColaborador"
+                                type="number"
+                                className="form-control input-lg"
+                                value={vals.pontosColaborador || ""}
+                                onChange={(e) => updateField(e.target.name, e.target.value)}
+                            />
                         </div>
                     </div>
 
                     <div className="associadocadastroedicaoObservacao">
                         <div className="associadocadastroedicaoInput">
-                            <label><span className="required"></span>Observação</label>
-                            <textarea name='observacao' rows='4' cols='50' value={vals.observacao || '' } onChange={(e) => updateField(e.target.name, e.target.value)}></textarea>
+                            <label>Observação</label>
+                            <textarea
+                                name='observacao'
+                                rows='4'
+                                cols='50'
+                                value={vals.observacao || ""}
+                                onChange={(e) => updateField(e.target.name, e.target.value)}
+                            ></textarea>
                         </div>
                     </div>
-                        
+
+                    {/* Save Button */}
+                    <div className="associadocadastroedicaoSave">
+                        <button className="saveButton" onClick={saveEvent}>
+                            Salvar
+                        </button>
+                    </div>
                 </div>
             </div>
         </>
