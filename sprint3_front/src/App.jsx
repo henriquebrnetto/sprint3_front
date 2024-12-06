@@ -54,6 +54,7 @@ function App() {
 
           {/* Ícone de Logout, visível somente quando o usuário está logado */}
           {isLoggedIn && (
+
             <Box sx={{ flexGrow: 0, mr: { xs: 1, sm: 2, md: 5 } }}>
               <Tooltip title="Logout">
                 <IconButton onClick={handleClearToken} color="inherit">
@@ -61,6 +62,7 @@ function App() {
                 </IconButton>
               </Tooltip>
             </Box>
+
           )}
         </Toolbar>
       </AppBar>
