@@ -4,10 +4,15 @@
 
 .marcarpresencaMainGrid {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     width: 100%;
     margin-top: 75px;
 }
+
+.associadocadastroedicaoMainGrid {
+    display: flex;
+}
+
 
 #marcarpresencaPreviousPageButton {
     position: absolute;
