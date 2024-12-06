@@ -13,6 +13,9 @@ import { AssociadoCadastroEdicao } from './pages/AssociadoCadastroEdicao'
 import { EventoCadastroEdicao } from './pages/EventoCadastroEdicao'
 import { MarcarPresenca } from './pages/marcarpresenca.jsx'
 
+import PrivateRoutes from "./privateRoutes.jsx"
+import PublicRoutes from './publicRoutes.jsx'
+
 import { HashRouter, Link, Route, Routes } from 'react-router-dom'
 
 import './App.css'
@@ -21,6 +24,11 @@ import { Login } from './pages/login';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true); // Simulação do estado de login
   const [isAdmin, setIsAdmin] = useState(false);
+
+  const handleClearToken = () => {
+    localStorage.setItem('token', '');
+    window.location.reload();
+  }
 
   return (
     <>
@@ -46,35 +54,40 @@ function App() {
 
           {/* Ícone de Logout, visível somente quando o usuário está logado */}
           {isLoggedIn && (
-            <Link to={'/'}>
-              <Box sx={{ flexGrow: 0, mr: { xs: 1, sm: 2, md: 5 } }}>
-                <Tooltip title="Logout">
-                  <IconButton color="inherit">
-                    <LogoutIcon sx={{ fontSize: { xs: '1rem', sm: '1.5rem', md: '1.75rem' } }} />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </Link>
-            
+
+            <Box sx={{ flexGrow: 0, mr: { xs: 1, sm: 2, md: 5 } }}>
+              <Tooltip title="Logout">
+                <IconButton onClick={handleClearToken} color="inherit">
+                  <LogoutIcon sx={{ fontSize: { xs: '1rem', sm: '1.5rem', md: '1.75rem' } }} />
+                </IconButton>
+              </Tooltip>
+            </Box>
+
           )}
         </Toolbar>
       </AppBar>
       
       <Routes>
-        <Route path='/' element={<Login />}/>
-        <Route path="/homeadmin" element={<HomeAdmin/>}/>
-        
-        <Route path='/eventos' element={<Eventos/>}/>
-        <Route path='/evento/:eventId' element={<Evento/>}/>
-        <Route path='/eventoCadastroEdicao' element={<EventoCadastroEdicao />}/>
-        <Route path='/eventoCadastroEdicao/:eventId' element={<EventoCadastroEdicao />}/>
 
-        <Route path='/associados' element={<Associados/>}/>
-        <Route path='/associado/:associateRegistration' element={<Associado/>}/>
-        <Route path='/associadoCadastroEdicao' element={<AssociadoCadastroEdicao/>}/>
-        <Route path='/associadoCadastroEdicao/:associateRegistration' element={<AssociadoCadastroEdicao/>}/>
+        <Route element={<PublicRoutes />}>
+          <Route path='/associado/:associateRegistration' element={<Associado/>}/>
+          <Route path='/login' element={<Login />}/>
+        </Route>
 
-        <Route path='/marcarpresenca/:eventId' element={<MarcarPresenca/>}/>
+        <Route element={<PrivateRoutes />}>
+          <Route path="/homeadmin" element={<HomeAdmin/>}/>
+          
+          <Route path='/eventos' element={<Eventos/>}/>
+          <Route path='/evento/:eventId' element={<Evento/>}/>
+          <Route path='/eventoCadastroEdicao' element={<EventoCadastroEdicao />}/>
+          <Route path='/eventoCadastroEdicao/:eventId' element={<EventoCadastroEdicao />}/>
+
+          <Route path='/associados' element={<Associados/>}/>
+          <Route path='/associadoCadastroEdicao' element={<AssociadoCadastroEdicao/>}/>
+          <Route path='/associadoCadastroEdicao/:associateRegistration' element={<AssociadoCadastroEdicao/>}/>
+
+          <Route path='/marcarpresenca/:eventId' element={<MarcarPresenca/>}/>
+        </Route>
       </Routes>  
     </>
   );
