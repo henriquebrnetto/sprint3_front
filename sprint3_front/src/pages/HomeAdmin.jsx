@@ -44,11 +44,11 @@ export function HomeAdmin() {
                 <h2>Eventos ativos</h2>
                 <div className='homeAdminevents'>
                     {activeEvents.map((activeEvent, index) => (
-                        <div className='homeAdminevent' key={index}>
+                        <Link to={"/evento/" + activeEvent.id}><button className='homeAdminevent' key={index}>
                             <h3 id='homeAdmineventInfo' >{activeEvent.nome} - {activeEvent.data}</h3>
                             <Link to={'/marcarpresenca/' + activeEvent.id}><button id='homeAdmineventButtonDesktop'><FaUserPlus></FaUserPlus>&nbsp;&nbsp;&nbsp; Adicionar Presenca</button></Link>
                             <Link to={'/marcarpresenca/' + activeEvent.id}><button id='homeAdmineventButtonMobile'><FaUserPlus></FaUserPlus></button></Link>
-                        </div>
+                        </button></Link>
                     ))}
                 </div>
             </div>

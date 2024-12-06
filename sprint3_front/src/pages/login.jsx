@@ -8,95 +8,107 @@ import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
+import { useNavigate } from "react-router-dom";
+
 export function Login() {
-  const [loginType, setLoginType] = useState('user'); // Default to admin
-  const [credentials, setCredentials] = useState({ id: '', password: '', rg: '' });
 
-  const handleLoginTypeChange = (event) => {
-    setLoginType(event.target.value);
-    // Reset credentials when changing login type
-    setCredentials({ id: '', password: '', rg: '' });
-  };
+  const navigate = useNavigate();
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setCredentials({ ...credentials, [name]: value });
-  };
+  const [loginType, setLoginType] = useState('user')
+  const [matricula, setMatricula] = useState('')
+  const [senha, setSenha] = useState('')
+  const [senhaErrada, setSenhaErrada] = useState(false)
 
-  const handleSubmit = () => {
-    // Prepare data based on loginType
-    const payload =
-      loginType === 'admin'
-        ? { id: credentials.id, password: credentials.password }
-        : { id: credentials.id, rg: credentials.rg };
+  const handleMatriculaInput = (e) => {
+    setMatricula(e.target.value);
+  }
+  const handleSenhaInput = (e) => {
+    setSenha(e.target.value);
+    
+  }
 
-    // Communicate with backend here
-    console.log('Submitting:', payload);
-    // Example API call
-    // fetch('/api/login', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(payload),
-    // })
-    //   .then((response) => response.json())
-    //   .then((data) => console.log('Response:', data))
-    //   .catch((error) => console.error('Error:', error));
-  };
+  const handleAdmin = async (password) => {
+    const url = `http://localhost:8081/api/v1/autenticacao/login/${matricula}`
+
+    try {
+
+      const response = await fetch(url, {method: 'GET', headers: {
+        'Authorization': password
+      }});
+      console.log(response)
+      if (!response.ok) {
+          throw new Error(`Failed to load auth data: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      if (data.token != 'Acesso Negado') {
+        localStorage.setItem('token', data.token)
+
+        navigate("/homeadmin")
+      } else {
+        setSenhaErrada(true)
+      }
+
+    } catch (error) {
+        console.error('Error loading associate data:', error);
+    }
+  }
+
+  const handleLogin = async () => {
+    if (matricula == ''){
+      return
+    }
+
+    const url = `http://localhost:8081/api/v1/autenticacao/login/${matricula}`
+
+    try {
+
+      const response = await fetch(url, {method: 'GET'});
+      console.log(response)
+      if (!response.ok) {
+          throw new Error(`Failed to load auth data: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      setLoginType(data.acesso);
+      if (data.acesso == 'user') {
+        localStorage.setItem('token', data.token)
+
+        navigate("/associado/" + String(matricula))
+      } else {
+        if (senha != ''){
+          handleAdmin(senha)
+        }
+      }
+
+    } catch (error) {
+        console.error('Error loading associate data:', error);
+    }
+  }
 
   return (
-    <div className='login-page'>
-      <h2>Login</h2>
-      <FormControl>
-        <RadioGroup
-          row
-          value={loginType}
-          onChange={handleLoginTypeChange}
-          name="loginType"
-        >
-          <FormControlLabel value="user" control={<Radio />} label="Usuário" />
-          <FormControlLabel value="admin" control={<Radio />} label="Administrador" />
-        </RadioGroup>
-      </FormControl>
-
-      <div style={{ marginTop: '20px' }}>
-        <TextField
-          label="ID"
-          name="id"
-          value={credentials.id}
-          onChange={handleInputChange}
-          fullWidth
-          margin="normal"
-        />
-        {loginType === 'admin' && (
-          <TextField
-            label="Senha"
-            name="password"
-            type="password"
-            value={credentials.password}
-            onChange={handleInputChange}
-            fullWidth
-            margin="normal"
-          />
-        )}
-        {loginType === 'user' && (
-          <TextField
-            label="RG"
-            name="rg"
-            value={credentials.rg}
-            onChange={handleInputChange}
-            fullWidth
-            margin="normal"
-          />
-        )}
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit}
-          style={{ marginTop: '20px' }}
-        >
-          Login
-        </Button>
-      </div>
+    <div className='loginMainGrid'>
+      <h2 className='loginTitle'>Login</h2>
+      <input type='text' onChange={handleMatriculaInput}></input>
+      {loginType != 'user' ? (
+        <div className='loginPasswordDiv'>
+          <label className='loginPasswordLabel'><span>*</span>Acesso restrito, por favor inserir a senha:</label>
+          <input className='loginPasswordInput' type='text' onChange={handleSenhaInput}></input>
+          {senhaErrada ? (
+            <div className='loginWrongPassword'>
+              <p className='loginWrongPasswordContent'>Acesso Negado</p>
+            </div>
+          ):(
+            <></>
+          )}
+          
+        </div>
+      ):(
+        <></>
+      )}
+      <button className='loginEntrarButton' onClick={handleLogin}>Entrar</button>
     </div>
   );
 }

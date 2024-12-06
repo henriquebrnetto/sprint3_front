@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './style/Associado.css';
 import { IoArrowBack } from 'react-icons/io5';
-import Calendar from 'react-calendar';
+// import Calendar from 'react-calendar';
 
 export function Associado() {
     const { associateRegistration } = useParams();
