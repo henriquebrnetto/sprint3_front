@@ -64,7 +64,6 @@ export function Eventos() {
     queryParams.append('size', elementPerPage);
   
     const url = `http://localhost:8081/api/v1/eventos?${queryParams.toString()}`;
-    console.log(url)
 
     try {
       const response = await fetch(url, { method: 'GET', mode: 'cors' });
@@ -104,6 +103,22 @@ export function Eventos() {
       }
 
     return nameFilter
+  }
+
+  const handleDelete = async (eventoId) => {
+    const url = `http://localhost:8081/api/v1/eventos/${eventoId}`;
+
+    try {
+      const response = await fetch(url, { method: 'DELETE', mode: 'cors' });
+      if (!response.ok) {
+        throw new Error(`Failed to delete data: ${response.statusText}`);
+      }
+      loadEvents();
+    } catch (error) {
+      console.error('Error loading associates:', error);
+    }
+
+
   }
 
 
@@ -181,11 +196,12 @@ return (
         <div className='eventosEventos'>
             {pagedEvents.map((event, index) => (
                 <div className='eventosEvent' key={index}>
+                    <>{event.ativo}</>
                     <Link to={'/evento/' + event.id}><button className='eventosEventBox'>
                         <h3 id='eventName'>{event.nome}</h3>
                     </button></Link>
                     <Link to={'/eventocadastroedicao/'+event.id}><button className='eventosEditButton'><FaPencilAlt></FaPencilAlt></button></Link>
-                    <Link><button className='eventosDeleteButton'><FaTrash></FaTrash></button></Link>
+                    <Link><button className='eventosDeleteButton' onClick={() => handleDelete(event.id)} disabled={event.status}><FaTrash></FaTrash></button></Link>
                 </div>
             ))}
         </div>

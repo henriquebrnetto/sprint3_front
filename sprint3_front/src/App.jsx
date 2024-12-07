@@ -12,6 +12,7 @@ import { Associado } from './pages/Associado'
 import { AssociadoCadastroEdicao } from './pages/AssociadoCadastroEdicao'
 import { EventoCadastroEdicao } from './pages/EventoCadastroEdicao'
 import { MarcarPresenca } from './pages/marcarpresenca.jsx'
+import { HomeRedirect } from './pages/mainRedirect.jsx'
 
 import PrivateRoutes from "./privateRoutes.jsx"
 import PublicRoutes from './publicRoutes.jsx'
@@ -28,6 +29,10 @@ function App() {
   const handleClearToken = () => {
     localStorage.setItem('token', '');
     window.location.reload();
+  }
+
+  if (localStorage.getItem('token') == null){
+    localStorage.setItem('token', '')
   }
 
   return (
@@ -72,6 +77,7 @@ function App() {
         <Route element={<PublicRoutes />}>
           <Route path='/associado/:associateRegistration' element={<Associado/>}/>
           <Route path='/login' element={<Login />}/>
+          <Route path='' element={<HomeRedirect />}/>
         </Route>
 
         <Route element={<PrivateRoutes />}>

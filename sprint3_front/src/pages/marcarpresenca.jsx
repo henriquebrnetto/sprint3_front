@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './style/MarcarPresenca.css';
-import { IoArrowBack } from 'react-icons/io5';
+import { IoArrowBack, IoArrowForward } from 'react-icons/io5';
 import { FaTshirt } from 'react-icons/fa';
 import { LuShirt } from 'react-icons/lu';
 import { Pagination } from "@mui/material";
@@ -128,8 +128,15 @@ export function MarcarPresenca() {
         }
     };
 
-    const handlePageChange = (event, value) => {
-        setPageN(value - 1);
+    const handlePageChange = (value) => {
+        if (value == -1) {
+            if (pageN == 0){
+                return
+            }
+        }
+        setPageN(
+            pageN + value
+        );
     };
 
     const checkPresence = (associateMatricula) => {
@@ -199,16 +206,11 @@ export function MarcarPresenca() {
                                 </div>
                             </button></Link>
                         )})}
+                        <div className='marcarpresencaPaging'>
+                            <button onClick={() => handlePageChange(-1)}><IoArrowBack></IoArrowBack></button>
+                            <button onClick={() => handlePageChange(1)}><IoArrowForward></IoArrowForward></button>
+                        </div>
                     </div>
-                    {maxPages > 1 && (
-                        <Pagination
-                            count={maxPages}
-                            page={pageN}
-                            onChange={handlePageChange}
-                            className='marcarpresencaNavBar'
-                            sx={{ justifyContent: "center", alignItems: "center", display: "flex", marginTop: "15px" }}
-                        />
-                    )}
                 </div>
             </div>
         </>
