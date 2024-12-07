@@ -7,6 +7,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import { Link } from 'react-router-dom';
 
 import { useNavigate } from "react-router-dom";
 
@@ -89,6 +90,7 @@ export function Login() {
   }
 
   return (
+
     <div className='loginMainGrid'>
       <h2 className='loginTitle'>Login</h2>
       <input type='text' onChange={handleMatriculaInput}></input>
@@ -109,6 +111,7 @@ export function Login() {
         <></>
       )}
       <button className='loginEntrarButton' onClick={handleLogin}>Entrar</button>
+
     </div>
   );
 }
