@@ -32,9 +32,8 @@ export function Evento() {
         const elementPerPage = 10
 
         const queryParams = new URLSearchParams();
-    
-        const urlAll = `http://localhost:8081/api/v1/presencas/evento/${eventId}`;
-    
+
+        queryParams.append('busca', searchFiltering)
         queryParams.append('page', pageN);
         queryParams.append('size', elementPerPage);
         
@@ -94,6 +93,18 @@ export function Evento() {
         }
     }
 
+    const flipStatus = async () => {
+
+        const url = `http://localhost:8081/api/v1/eventos/status/${eventId}`
+
+        try {
+            const response = await fetch(url, { method: 'PUT', mode: 'cors' });
+            loadEvent(eventId) 
+        } catch (error) {
+            console.error('Error deleting event:', error);
+        }
+    }
+
     const [selectedValue, setSelectedValue] = useState(null);
 
     const handleSearch = (options, { inputValue }) => {
@@ -110,8 +121,15 @@ export function Evento() {
         return nameRegistrationFilter
     };
 
-    const handlePageChange = (event, value) => {
-        setPageN(value - 1);
+    const handlePageChange = (value) => {
+        if (value == -1) {
+            if (pageN == 0){
+                return
+            }
+        }
+        setPageN(
+            pageN + value
+        );
     };
 
     function handleFilter(filter, pagedPresences, filteredPresences) {
@@ -126,10 +144,6 @@ export function Evento() {
           ...prevVals,
           [field]: value,
         }));
-    };
-
-    const flipStatus = () => {
-        updateField('status', !event.status)
     };
 
     return (
@@ -152,8 +166,8 @@ export function Evento() {
                             <h2>Local:</h2>
                             <p>{event.local}</p>
                         </div>
-                        <button className='eventoEventActive' id={String(event.status)} onClick={flipStatus}>
-                            Ativo 
+                        <button className={'eventoEventActive ' + event.status ? 'Ativo': 'Inativo'} onClick={flipStatus}>
+                            {event.status ? 'Ativo': 'Inativo'}
                         </button>
                     </div>
                     <div className='eventoAssociateSearch'>
@@ -211,24 +225,25 @@ export function Evento() {
                 <h2 className='eventoAssociatesTitle'>Associados presentes no evento:</h2>
                 <div className='eventoAssociates'>
                     {handleFilter(filter, pagedPresences, filteredPresences).map((presence, index) => (
-                        <div className='eventAssociate' key={index}>
-                            <button className='eventoAssociateBox'>
-                                <h3 id='eventName'>{presence.nome}</h3>
-                                {presence.camisa ? (
-                                    <FaTshirt id='eventAssociateWithShirt'></FaTshirt>
-                                ):(
-                                    <LuShirt id='eventAssociateNoShirt'></LuShirt>
-                                )}
-                            </button>
-                            <button className='eventosDeleteButton' onClick={() => deletePresence(presence.id)}><GrClose></GrClose></button>
-                        </div>
+                        <>
+                            <div className='eventAssociate' key={index}>
+                                <button className='eventoAssociateBox'>
+                                    <h3 id='eventName'>{presence.nome}</h3>
+                                    {presence.camisa ? (
+                                        <FaTshirt id='eventAssociateWithShirt'></FaTshirt>
+                                    ):(
+                                        <LuShirt id='eventAssociateNoShirt'></LuShirt>
+                                    )}
+                                </button>
+                                <button className='eventosDeleteButton' onClick={() => deletePresence(presence.id)}><GrClose></GrClose></button>
+                            </div>
+                            <div className='marcarpresencaPaging'>
+                                <button onClick={() => handlePageChange(-1)}><IoArrowBack></IoArrowBack></button>
+                                <button onClick={() => handlePageChange(1)}><IoArrowForward></IoArrowForward></button>
+                            </div>
+                        </>
                     ))}
                 </div>
-                {maxPages > 1 && filter.length > 0? (
-                    <Pagination count={maxPages} page={pageN + 1} onChange={handlePageChange} className='eventosNavBar' sx={{justifyContent:"center", alignItems: "center", display:"flex", marginTop:"15px"}}/>
-                ):(
-                    <></>
-                )}
             </div>
         </>
     );  
