@@ -3,13 +3,10 @@ body {
 }
 
 .eventosMainGrid {
-    width: 100%;
-    /* border: 2cqb solid white; */
-    /* border: 2px solid white; */
-    padding: 0px;
-    padding: 15px;
-    margin: 20px;
-    margin-top: 55px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 100px;
 }
 
 .eventosPreviousPage {
@@ -99,6 +96,3 @@ body {
         margin-top: 75px;
     }
 }
-
-
-

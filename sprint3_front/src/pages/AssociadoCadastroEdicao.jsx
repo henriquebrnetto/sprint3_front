@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import './style/Evento.css';
+import './style/EventoCadastroEdicao.css';
 import { useParams } from 'react-router-dom';
 import { Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select } from '@mui/material';
 

@@ -7,6 +7,7 @@ import FilterDialog from './FilterDialog';
 import OrderDialog from './OrderDialog';
 
 import { Link } from 'react-router'
+import { CgAdd } from 'react-icons/cg';
 
 export function Associados() {
   const [associates, setAssociates] = useState([]);
@@ -153,6 +154,9 @@ export function Associados() {
   return (
     <>
       <div className='associadosMainGrid'>
+
+        <Link to='/associadoCadastroEdicao'> <button id='eventosNewEvent'><CgAdd></CgAdd></button></Link>
+
         <div className='associadosPreviousPage'>
           <Link to='/homeadmin'><button id='associadosPreviousPageButton'><IoArrowBack /></button></Link>
         </div>

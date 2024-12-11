@@ -127,7 +127,7 @@ return (
   <>
     <div className='eventosMainGrid'>
 
-      <Link to='/associadocadastroedicao/bla'> <button id='eventosNewEvent'><CgAdd></CgAdd></button></Link>
+      <Link to='/eventoCadastroEdicao'> <button id='eventosNewEvent'><CgAdd></CgAdd></button></Link>
 
       <div className='eventosPreviousPage'>
           <Link to='/homeadmin'><button id='eventosPreviousPageButton'><IoArrowBack /></button></Link>

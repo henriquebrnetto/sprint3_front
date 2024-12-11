@@ -34,7 +34,7 @@ const DateFilterDialog = ({ open, onClose, onApply, initialFilters }) => {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Filter by Date and Status</DialogTitle>
+      <DialogTitle>Filtrar por data e Status</DialogTitle>
       <DialogContent>
         <TextField
           label="Start Date"
@@ -70,13 +70,13 @@ const DateFilterDialog = ({ open, onClose, onApply, initialFilters }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleReset} color="secondary">
-          Reset
+          Remover Filtros
         </Button>
         <Button onClick={onClose} color="primary">
-          Cancel
+          Cancelar
         </Button>
         <Button onClick={handleApply} color="primary">
-          Apply
+          Aplicar
         </Button>
       </DialogActions>
     </Dialog>
